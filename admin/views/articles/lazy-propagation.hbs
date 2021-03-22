@@ -1,0 +1,356 @@
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "TechArticle",
+  "description": "Técninca de optimización para segment tree",
+  "name": "Segment tree -Lazy propagation",
+  "headline":"Lazy propagation",
+  "inLanguage":"es-xl",
+  "keywords":"árbol,segmento,lazy,propagation,segment,tree,propagacion,optimización,español"
+}
+</script>
+
+<b>Lazy propagation</b> es una técnica de optimización para segment tree. 
+<br/>
+Recordando lo antes visto en <a href="/segment-tree">segment tree</a>, las consultas y actualizaciones toman complejidad $O(log\ N)$.
+<br>
+Pero existe una actualización que todavía es lenta. La actualización de rango.
+<br>
+Por ello para optimizarlo buscaremos los nodos de la descomposición fundamental (nodos rojos en la lección del segment tree) y dejaremos allí una marca de que dejamos pendiente una actualización, para que cuando sea necesario, mover la marca a sus hijos.
+<br>
+<br>
+Para entenderlo mejor, veremos un problema.
+<h3>Problema</h3>
+<hr>
+Tenemos un arreglo $A$ de tamaño $N$, queremos poder realizar las siguientes operaciones:
+<div class="tabuled-area">
+    <li>sumar(i, j, x), a todos los valores de $A_k$ que cumplan $i\leq k \leq j$, sumarle $x$</li>
+    <li>maximoEntre(i, j), obtener el máximo valor $A_k$ que cumpla: $i\leq k \leq j$</li>
+</div>
+<br>
+La solución sencilla, seria guardar el arreglo $A$ de forma normal y realizar las operaciones con ciclos, el codigo queda:
+<pre style='color:#000000;background:#ffffff;'><span style='color:#000080; font-weight:bold; '>int</span> A<span style='color:#808030; '>[</span><span style='color:#008c00; '>10000</span><span style='color:#808030; '>]</span><span style='color:#000000; '>;</span>
+
+<span style='color:#000080; font-weight:bold; '>void</span> sumar<span style='color:#808030; '>(</span><span style='color:#000080; font-weight:bold; '>int</span> i<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> j<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> x<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+    <span style='color:#000080; font-weight:bold; '>for</span> <span style='color:#808030; '>(</span><span style='color:#000080; font-weight:bold; '>int</span> k <span style='color:#808030; '>=</span> i<span style='color:#000000; '>;</span> k <span style='color:#808030; '>&lt;</span><span style='color:#808030; '>=</span>j<span style='color:#000000; '>;</span> k<span style='color:#808030; '>+</span><span style='color:#808030; '>+</span><span style='color:#808030; '>)</span> 
+        A<span style='color:#808030; '>[</span>k<span style='color:#808030; '>]</span> <span style='color:#808030; '>+</span><span style='color:#808030; '>=</span> x<span style='color:#000000; '>;</span>
+<span style='color:#000000; '>}</span>
+
+<span style='color:#000080; font-weight:bold; '>int</span> maximoEntre<span style='color:#808030; '>(</span><span style='color:#000080; font-weight:bold; '>int</span> i<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> j<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+    <span style='color:#000080; font-weight:bold; '>int</span> respuesta <span style='color:#808030; '>=</span> A<span style='color:#808030; '>[</span>i<span style='color:#808030; '>]</span><span style='color:#000000; '>;</span>
+    <span style='color:#000080; font-weight:bold; '>for</span> <span style='color:#808030; '>(</span><span style='color:#000080; font-weight:bold; '>int</span> k <span style='color:#808030; '>=</span> i<span style='color:#000000; '>;</span> k <span style='color:#808030; '>&lt;</span><span style='color:#808030; '>=</span>j<span style='color:#000000; '>;</span> k<span style='color:#808030; '>+</span><span style='color:#808030; '>+</span><span style='color:#808030; '>)</span> 
+        respuesta <span style='color:#808030; '>=</span> <span style='color:#603000; '>max</span><span style='color:#808030; '>(</span>A<span style='color:#808030; '>[</span>k<span style='color:#808030; '>]</span><span style='color:#808030; '>,</span>respuesta<span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+    <span style='color:#000080; font-weight:bold; '>return</span> respuesta<span style='color:#000000; '>;</span>
+<span style='color:#000000; '>}</span>
+</pre>
+Sin embargo, el codigo resultante tiene una complejidad que se puede considerar lenta, $O(N)$ para ambos casos. Pero podemos optimizarla con el uso de un segment tree.<br>
+Aunque agiliza la operación maximoEntre(i,j) a una complejidad de $O(log\ N)$; reduce la velocidad de suma(i,j,x), pués con nuestro conocimiento actual solo podemos actualizar cada elemto de $A$ que sea afectado, con una complejidad total de $O(Nlog\ N)$
+<br>
+El codigo seria el siguiente (Un codigo similar se explica en <a href="/segment-tree">segment tree</a>):
+<pre style='color:#000000;background:#ffffff;'><span style='color:#696969; '>//Tamano de A</span>
+<span style='color:#000080; font-weight:bold; '>int</span> N<span style='color:#000000; '>;</span>
+<span style='color:#000080; font-weight:bold; '>int</span> A<span style='color:#808030; '>[</span><span style='color:#008c00; '>10000</span><span style='color:#808030; '>]</span><span style='color:#000000; '>;</span>
+<span style='color:#696969; '>//El segment tree</span>
+<span style='color:#000080; font-weight:bold; '>int</span> ST<span style='color:#808030; '>[</span><span style='color:#008c00; '>20000</span><span style='color:#808030; '>]</span><span style='color:#000000; '>;</span>
+
+<span style='color:#696969; '>//Funcion que construye el segment tree</span>
+<span style='color:#000080; font-weight:bold; '>void</span> generarSegmentTree<span style='color:#808030; '>(</span><span style='color:#000080; font-weight:bold; '>int</span> ini<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> fin<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> ind<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+    <span style='color:#000080; font-weight:bold; '>if</span> <span style='color:#808030; '>(</span>ini <span style='color:#808030; '>=</span><span style='color:#808030; '>=</span> fin<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+        <span style='color:#696969; '>//Nos encontramos en una hoja, su valor es del arreglo A</span>
+        ST<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span><span style='color:#808030; '>=</span>A<span style='color:#808030; '>[</span>ini<span style='color:#808030; '>]</span><span style='color:#000000; '>;</span>
+        <span style='color:#000080; font-weight:bold; '>return</span><span style='color:#000000; '>;</span>
+    <span style='color:#000000; '>}</span>
+    <span style='color:#696969; '>//Generar el hijo izquierdo</span>
+    generarSegmentTree<span style='color:#808030; '>(</span>ini<span style='color:#808030; '>,</span> <span style='color:#808030; '>(</span>ini<span style='color:#808030; '>+</span>fin<span style='color:#808030; '>)</span><span style='color:#808030; '>/</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>,</span> <span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+    <span style='color:#696969; '>//Generar el hijo derecho</span>
+    generarSegmentTree<span style='color:#808030; '>(</span><span style='color:#808030; '>(</span>ini<span style='color:#808030; '>+</span>fin<span style='color:#808030; '>)</span><span style='color:#808030; '>/</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>,</span>fin<span style='color:#808030; '>,</span> <span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+    <span style='color:#696969; '>//Combinar los dos hijos en nosotros, su padre</span>
+    ST<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span><span style='color:#808030; '>=</span><span style='color:#603000; '>max</span><span style='color:#808030; '>(</span>ST<span style='color:#808030; '>[</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>]</span><span style='color:#808030; '>,</span>ST<span style='color:#808030; '>[</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>]</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+<span style='color:#000000; '>}</span>
+
+
+<span style='color:#000080; font-weight:bold; '>void</span> sumar<span style='color:#808030; '>(</span><span style='color:#000080; font-weight:bold; '>int</span> i<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> j<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> x<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+   <span style='color:#000080; font-weight:bold; '>for</span> <span style='color:#808030; '>(</span><span style='color:#000080; font-weight:bold; '>int</span> k <span style='color:#808030; '>=</span> i<span style='color:#000000; '>;</span> k <span style='color:#808030; '>&lt;</span><span style='color:#808030; '>=</span>j<span style='color:#000000; '>;</span> k<span style='color:#808030; '>+</span><span style='color:#808030; '>+</span><span style='color:#808030; '>)</span> 
+       actualizar<span style='color:#808030; '>(</span>k<span style='color:#808030; '>,</span>x<span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>   
+
+<span style='color:#000000; '>}</span>
+
+<span style='color:#000080; font-weight:bold; '>void</span> actualizar<span style='color:#808030; '>(</span><span style='color:#000080; font-weight:bold; '>int</span> i<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> x<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+    caminoAmarillo<span style='color:#808030; '>(</span>i<span style='color:#808030; '>,</span>x<span style='color:#808030; '>,</span><span style='color:#008c00; '>0</span><span style='color:#808030; '>,</span>N<span style='color:#808030; '>-</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>,</span><span style='color:#008c00; '>0</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+<span style='color:#000000; '>}</span>
+
+<span style='color:#696969; '>//Recorre el camino amarillo para cambiar el nodo [i,i] al valor x, desde el nodo [l,r] con indice ind en ST</span>
+<span style='color:#000080; font-weight:bold; '>void</span> caminoAmarillo<span style='color:#808030; '>(</span><span style='color:#000080; font-weight:bold; '>int</span> i<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> x<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> l<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> r<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> ind<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+   <span style='color:#696969; '>//Estamos en una hoja, y por lo tanto en [i,i] </span>
+   <span style='color:#000080; font-weight:bold; '>if</span> <span style='color:#808030; '>(</span>l<span style='color:#808030; '>=</span><span style='color:#808030; '>=</span>r<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+      ST<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span><span style='color:#808030; '>+</span><span style='color:#808030; '>=</span>x<span style='color:#000000; '>;</span>
+      <span style='color:#000080; font-weight:bold; '>return</span><span style='color:#000000; '>;</span>
+   <span style='color:#000000; '>}</span>
+   <span style='color:#696969; '>//calculamos la mitad del rango</span>
+   <span style='color:#000080; font-weight:bold; '>int</span> mid <span style='color:#808030; '>=</span><span style='color:#808030; '>(</span>l<span style='color:#808030; '>+</span>r<span style='color:#808030; '>)</span><span style='color:#808030; '>/</span><span style='color:#008c00; '>2</span><span style='color:#000000; '>;</span>
+    
+   <span style='color:#000080; font-weight:bold; '>if</span> <span style='color:#808030; '>(</span>i <span style='color:#808030; '>&lt;</span><span style='color:#808030; '>=</span> mid<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+       <span style='color:#696969; '>//El nodo[i,i] pertenece al hijo izquierdo</span>
+       caminoAmarillo<span style='color:#808030; '>(</span>i<span style='color:#808030; '>,</span>x<span style='color:#808030; '>,</span>l<span style='color:#808030; '>,</span>mid<span style='color:#808030; '>,</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+   <span style='color:#000000; '>}</span> <span style='color:#000080; font-weight:bold; '>else</span> <span style='color:#000000; '>{</span>
+       <span style='color:#696969; '>//El nodo[i,i] pertenece al hijo derecho</span>
+       caminoAmarillo<span style='color:#808030; '>(</span>i<span style='color:#808030; '>,</span>x<span style='color:#808030; '>,</span>mid<span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>,</span>r<span style='color:#808030; '>,</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+   <span style='color:#000000; '>}</span>
+   <span style='color:#696969; '>//Recalcular ST[ind]</span>
+   ST<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span><span style='color:#808030; '>=</span><span style='color:#603000; '>max</span><span style='color:#808030; '>(</span>ST<span style='color:#808030; '>[</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>]</span><span style='color:#808030; '>,</span>ST<span style='color:#808030; '>[</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>]</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+<span style='color:#000000; '>}</span>
+
+
+<span style='color:#696969; '>//Calcula la suma del rango [i,j]</span>
+<span style='color:#000080; font-weight:bold; '>int</span> maximoEntre<span style='color:#808030; '>(</span><span style='color:#000080; font-weight:bold; '>int</span> i<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> j<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+  <span style='color:#000080; font-weight:bold; '>return</span> buscaRojos<span style='color:#808030; '>(</span>i<span style='color:#808030; '>,</span> j<span style='color:#808030; '>,</span> <span style='color:#008c00; '>0</span><span style='color:#808030; '>,</span> N<span style='color:#808030; '>-</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>,</span><span style='color:#008c00; '>0</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+<span style='color:#000000; '>}</span>
+
+<span style='color:#696969; '>//busca nodos rojos del rango [i,j] a partir del nodo ind que abarca el subrango [l,r]</span>
+<span style='color:#000080; font-weight:bold; '>int</span> buscaRojos<span style='color:#808030; '>(</span><span style='color:#000080; font-weight:bold; '>int</span> i<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> j<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> l<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> r<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> ind<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+   <span style='color:#696969; '>//El rango del nodo ind [l,r] esta perfectamente contenido en [i,j]</span>
+   <span style='color:#000080; font-weight:bold; '>if</span> <span style='color:#808030; '>(</span>i <span style='color:#808030; '>&lt;</span><span style='color:#808030; '>=</span>l <span style='color:#808030; '>&amp;</span><span style='color:#808030; '>&amp;</span> r <span style='color:#808030; '>&lt;</span><span style='color:#808030; '>=</span>r<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+      <span style='color:#696969; '>//Este nodo es rojo</span>
+      <span style='color:#000080; font-weight:bold; '>return</span> ST<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span><span style='color:#000000; '>;</span>
+   <span style='color:#000000; '>}</span>
+
+   <span style='color:#000080; font-weight:bold; '>if</span> <span style='color:#808030; '>(</span>l <span style='color:#808030; '>></span> j <span style='color:#808030; '>|</span><span style='color:#808030; '>|</span> r <span style='color:#808030; '>&lt;</span> i<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+      <span style='color:#696969; '>//El rango de este nodo esta completamente fuera de [i,j] nada de este subarbol es rojo;</span>
+      <span style='color:#000080; font-weight:bold; '>return</span> <span style='color:#808030; '>-</span><span style='color:#008c00; '>1000000000</span><span style='color:#000000; '>;</span><span style='color:#696969; '>//Usamos menos infinito (o un numero muy chiquito) porque es el neutro de maximo.</span>
+   <span style='color:#000000; '>}</span>
+   <span style='color:#696969; '>//Existe al menos un nodo rojo debajo, buscalos.</span>
+   <span style='color:#000080; font-weight:bold; '>int</span> izq <span style='color:#808030; '>=</span> buscaRojos<span style='color:#808030; '>(</span>i<span style='color:#808030; '>,</span>j<span style='color:#808030; '>,</span>l<span style='color:#808030; '>,</span><span style='color:#808030; '>(</span>l<span style='color:#808030; '>+</span>r<span style='color:#808030; '>)</span><span style='color:#808030; '>/</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>,</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+   <span style='color:#000080; font-weight:bold; '>int</span> der <span style='color:#808030; '>=</span> buscaRojos<span style='color:#808030; '>(</span>i<span style='color:#808030; '>,</span>j<span style='color:#808030; '>,</span><span style='color:#808030; '>(</span>l<span style='color:#808030; '>+</span>r<span style='color:#808030; '>)</span><span style='color:#808030; '>/</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>,</span>r<span style='color:#808030; '>,</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+   <span style='color:#000080; font-weight:bold; '>return</span> <span style='color:#603000; '>max</span><span style='color:#808030; '>(</span>izq<span style='color:#808030; '>,</span>der<span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+<span style='color:#000000; '>}</span>
+</pre>
+
+Repito, aunque maximoEntre(i,j) es rápido, sumar(i,j,x) sigue siendo lento, pero no hay que preocuparse, lazy propagation es una forma de mejorar la complejidad de sumar(i,j,x).<br>
+<br/>
+
+Pero antes, hay que ver que sucede cuando limitamos la operacion sumar, a que afecte todo el arreglo, es decir que solo podremos llamar a sumar(0,N-1,x).
+<br>
+En vez de actualizar el arreglo con cada operacion suma, podemos guardar el cambio en una variable exterior digamos $d$ y sumarle $x$ con cada operación, reduciendo la complejidad de la operacion a $O(1)$, finalmente, cuando se pregunte por un rango regresamos lo siguiente $maximoEntre(i, j)+d$
+<br>
+Ahora permitamos llamar a cualquier sumar(i, j, x). Entonces el problema se complica un poco, pero lo que podemos hacer es que cada nodo del segment tree tenga un valor $d$. Entonces al realizar la operación sumar(i, j, x), buscaremos los nodos rojos( aquellos de la descomposición fundamental), y solo a ellos le sumaremos $x$ a $d$ y con recursión, recalcularemos los nodos superiores.
+<br>
+El codigo queda así:
+<pre style='color:#000000;background:#ffffff;'><span style='color:#696969; '>//Tamano de A</span>
+<span style='color:#000080; font-weight:bold; '>int</span> N<span style='color:#000000; '>;</span>
+<span style='color:#000080; font-weight:bold; '>int</span> A<span style='color:#808030; '>[</span><span style='color:#008c00; '>10000</span><span style='color:#808030; '>]</span><span style='color:#000000; '>;</span>
+<span style='color:#696969; '>//El segment tree</span>
+<span style='color:#000080; font-weight:bold; '>int</span> ST<span style='color:#808030; '>[</span><span style='color:#008c00; '>20000</span><span style='color:#808030; '>]</span><span style='color:#000000; '>;</span>
+<span style='color:#696969; '>//Aqui se guardan los valores 'd' de cada nodo</span>
+<span style='color:#000080; font-weight:bold; '>int</span> Lazy<span style='color:#808030; '>[</span><span style='color:#008c00; '>20000</span><span style='color:#808030; '>]</span><span style='color:#000000; '>;</span>
+
+<span style='color:#696969; '>//Funcion que construye el segment tree</span>
+<span style='color:#000080; font-weight:bold; '>void</span> generarSegmentTree<span style='color:#808030; '>(</span><span style='color:#000080; font-weight:bold; '>int</span> ini<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> fin<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> ind<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+    <span style='color:#000080; font-weight:bold; '>if</span> <span style='color:#808030; '>(</span>ini <span style='color:#808030; '>=</span><span style='color:#808030; '>=</span> fin<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+        <span style='color:#696969; '>//Nos encontramos en una hoja, su valor es del arreglo A</span>
+        ST<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span><span style='color:#808030; '>=</span>A<span style='color:#808030; '>[</span>ini<span style='color:#808030; '>]</span><span style='color:#000000; '>;</span>
+        <span style='color:#000080; font-weight:bold; '>return</span><span style='color:#000000; '>;</span>
+    <span style='color:#000000; '>}</span>
+    <span style='color:#696969; '>//Generar el hijo izquierdo</span>
+    generarSegmentTree<span style='color:#808030; '>(</span>ini<span style='color:#808030; '>,</span> <span style='color:#808030; '>(</span>ini<span style='color:#808030; '>+</span>fin<span style='color:#808030; '>)</span><span style='color:#808030; '>/</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>,</span> <span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+    <span style='color:#696969; '>//Generar el hijo derecho</span>
+    generarSegmentTree<span style='color:#808030; '>(</span><span style='color:#808030; '>(</span>ini<span style='color:#808030; '>+</span>fin<span style='color:#808030; '>)</span><span style='color:#808030; '>/</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>,</span>fin<span style='color:#808030; '>,</span> <span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+    <span style='color:#696969; '>//Combinar los dos hijos en nosotros, su padre</span>
+    ST<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span><span style='color:#808030; '>=</span><span style='color:#603000; '>max</span><span style='color:#808030; '>(</span>ST<span style='color:#808030; '>[</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>]</span><span style='color:#808030; '>,</span>ST<span style='color:#808030; '>[</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>]</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+<span style='color:#000000; '>}</span>
+
+
+<span style='color:#000080; font-weight:bold; '>void</span> sumar<span style='color:#808030; '>(</span><span style='color:#000080; font-weight:bold; '>int</span> i<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> j<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> x<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+   sumardARojos<span style='color:#808030; '>(</span>i<span style='color:#808030; '>,</span>j<span style='color:#808030; '>,</span>x<span style='color:#808030; '>,</span><span style='color:#008c00; '>0</span><span style='color:#808030; '>,</span>N<span style='color:#808030; '>-</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>,</span><span style='color:#008c00; '>0</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>   
+
+<span style='color:#000000; '>}</span>
+
+<span style='color:#696969; '>//busca nodos rojos del rango i, j a partir del nodo ind [l,r], y les suma x en Lazy[ind]</span>
+<span style='color:#000080; font-weight:bold; '>void</span> sumardARojos<span style='color:#808030; '>(</span><span style='color:#000080; font-weight:bold; '>int</span> i<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> j<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> x<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> l<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> r<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> ind<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+   <span style='color:#696969; '>//El rango del nodo ind [l,r] esta perfectamente contenido en [i,j]</span>
+   <span style='color:#000080; font-weight:bold; '>if</span> <span style='color:#808030; '>(</span>i <span style='color:#808030; '>&lt;</span><span style='color:#808030; '>=</span>l <span style='color:#808030; '>&amp;</span><span style='color:#808030; '>&amp;</span> r <span style='color:#808030; '>&lt;</span><span style='color:#808030; '>=</span>r<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+      <span style='color:#696969; '>//Este nodo es rojo</span>
+     lazy<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span><span style='color:#808030; '>+</span><span style='color:#808030; '>=</span>x<span style='color:#000000; '>;</span>
+     <span style='color:#000080; font-weight:bold; '>return</span><span style='color:#000000; '>;</span>
+   <span style='color:#000000; '>}</span>
+
+   <span style='color:#000080; font-weight:bold; '>if</span> <span style='color:#808030; '>(</span>l <span style='color:#808030; '>></span> j <span style='color:#808030; '>|</span><span style='color:#808030; '>|</span> r <span style='color:#808030; '>&lt;</span> i<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+      <span style='color:#696969; '>//El rango de este nodo esta completamente fuera de [i,j] nada de este subarbol es rojo;</span>
+      <span style='color:#000080; font-weight:bold; '>return</span><span style='color:#000000; '>;</span>
+   <span style='color:#000000; '>}</span>
+   <span style='color:#696969; '>//Existe al menos un nodo rojo debajo, buscalos.</span>
+   sumardARojos<span style='color:#808030; '>(</span>i<span style='color:#808030; '>,</span>j<span style='color:#808030; '>,</span>l<span style='color:#808030; '>,</span><span style='color:#808030; '>(</span>l<span style='color:#808030; '>+</span>r<span style='color:#808030; '>)</span><span style='color:#808030; '>/</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>,</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+   sumardARojos<span style='color:#808030; '>(</span>i<span style='color:#808030; '>,</span>j<span style='color:#808030; '>,</span><span style='color:#808030; '>(</span>l<span style='color:#808030; '>+</span>r<span style='color:#808030; '>)</span><span style='color:#808030; '>/</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>,</span>r<span style='color:#808030; '>,</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+   <span style='color:#696969; '>//Recalcular el valor de este nodo</span>
+   ST<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span><span style='color:#808030; '>=</span><span style='color:#603000; '>max</span><span style='color:#808030; '>(</span>ST<span style='color:#808030; '>[</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>]</span><span style='color:#808030; '>+</span>Lazy<span style='color:#808030; '>[</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>]</span><span style='color:#808030; '>,</span>ST<span style='color:#808030; '>[</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>]</span><span style='color:#808030; '>+</span>Lazy<span style='color:#808030; '>[</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>]</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+
+<span style='color:#000000; '>}</span>
+
+<span style='color:#000080; font-weight:bold; '>void</span> actualizar<span style='color:#808030; '>(</span><span style='color:#000080; font-weight:bold; '>int</span> i<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> x<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+    caminoAmarillo<span style='color:#808030; '>(</span>i<span style='color:#808030; '>,</span>x<span style='color:#808030; '>,</span><span style='color:#008c00; '>0</span><span style='color:#808030; '>,</span>N<span style='color:#808030; '>-</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>,</span><span style='color:#008c00; '>0</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+<span style='color:#000000; '>}</span>
+
+<span style='color:#696969; '>//Recorre el camino amarillo para cambiar el nodo [i,i] al valor x, desde el nodo [l,r] con indice ind en ST</span>
+<span style='color:#000080; font-weight:bold; '>void</span> caminoAmarillo<span style='color:#808030; '>(</span><span style='color:#000080; font-weight:bold; '>int</span> i<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> x<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> l<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> r<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> ind<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+   <span style='color:#696969; '>//Estamos en una hoja, y por lo tanto en [i,i] </span>
+   <span style='color:#000080; font-weight:bold; '>if</span> <span style='color:#808030; '>(</span>l<span style='color:#808030; '>=</span><span style='color:#808030; '>=</span>r<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+      ST<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span><span style='color:#808030; '>+</span><span style='color:#808030; '>=</span>x<span style='color:#000000; '>;</span>
+      <span style='color:#000080; font-weight:bold; '>return</span><span style='color:#000000; '>;</span>
+   <span style='color:#000000; '>}</span>
+   <span style='color:#696969; '>//calculamos la mitad del rango</span>
+   <span style='color:#000080; font-weight:bold; '>int</span> mid <span style='color:#808030; '>=</span><span style='color:#808030; '>(</span>l<span style='color:#808030; '>+</span>r<span style='color:#808030; '>)</span><span style='color:#808030; '>/</span><span style='color:#008c00; '>2</span><span style='color:#000000; '>;</span>
+    
+   <span style='color:#000080; font-weight:bold; '>if</span> <span style='color:#808030; '>(</span>i <span style='color:#808030; '>&lt;</span><span style='color:#808030; '>=</span> mid<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+       <span style='color:#696969; '>//El nodo[i,i] pertenece al hijo izquierdo</span>
+       caminoAmarillo<span style='color:#808030; '>(</span>i<span style='color:#808030; '>,</span>x<span style='color:#808030; '>,</span>l<span style='color:#808030; '>,</span>mid<span style='color:#808030; '>,</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+   <span style='color:#000000; '>}</span> <span style='color:#000080; font-weight:bold; '>else</span> <span style='color:#000000; '>{</span>
+       <span style='color:#696969; '>//El nodo[i,i] pertenece al hijo derecho</span>
+       caminoAmarillo<span style='color:#808030; '>(</span>i<span style='color:#808030; '>,</span>x<span style='color:#808030; '>,</span>mid<span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>,</span>r<span style='color:#808030; '>,</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+   <span style='color:#000000; '>}</span>
+   <span style='color:#696969; '>//Recalcular ST[ind]</span>
+   ST<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span><span style='color:#808030; '>=</span><span style='color:#603000; '>max</span><span style='color:#808030; '>(</span>ST<span style='color:#808030; '>[</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>]</span><span style='color:#808030; '>,</span>ST<span style='color:#808030; '>[</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>]</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+<span style='color:#000000; '>}</span>
+
+
+<span style='color:#696969; '>//Calcula la suma del rango [i,j]</span>
+<span style='color:#000080; font-weight:bold; '>int</span> maximoEntre<span style='color:#808030; '>(</span><span style='color:#000080; font-weight:bold; '>int</span> i<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> j<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+  <span style='color:#000080; font-weight:bold; '>return</span> buscaRojos<span style='color:#808030; '>(</span>i<span style='color:#808030; '>,</span> j<span style='color:#808030; '>,</span> <span style='color:#008c00; '>0</span><span style='color:#808030; '>,</span> N<span style='color:#808030; '>-</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>,</span><span style='color:#008c00; '>0</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+<span style='color:#000000; '>}</span>
+
+<span style='color:#696969; '>//busca nodos rojos del rango [i,j] a partir del nodo ind que abarca el subrango [l,r]</span>
+<span style='color:#000080; font-weight:bold; '>int</span> buscaRojos<span style='color:#808030; '>(</span><span style='color:#000080; font-weight:bold; '>int</span> i<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> j<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> l<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> r<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> ind<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+   <span style='color:#696969; '>//El rango del nodo ind [l,r] esta perfectamente contenido en [i,j]</span>
+   <span style='color:#000080; font-weight:bold; '>if</span> <span style='color:#808030; '>(</span>i <span style='color:#808030; '>&lt;</span><span style='color:#808030; '>=</span>l <span style='color:#808030; '>&amp;</span><span style='color:#808030; '>&amp;</span> r <span style='color:#808030; '>&lt;</span><span style='color:#808030; '>=</span>r<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+      <span style='color:#696969; '>//Este nodo es rojo</span>
+      <span style='color:#000080; font-weight:bold; '>return</span> ST<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span><span style='color:#808030; '>+</span>Lazy<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span><span style='color:#000000; '>;</span>
+   <span style='color:#000000; '>}</span>
+
+   <span style='color:#000080; font-weight:bold; '>if</span> <span style='color:#808030; '>(</span>l <span style='color:#808030; '>></span> j <span style='color:#808030; '>|</span><span style='color:#808030; '>|</span> r <span style='color:#808030; '>&lt;</span> i<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+      <span style='color:#696969; '>//El rango de este nodo esta completamente fuera de [i,j] nada de este subarbol es rojo;</span>
+      <span style='color:#000080; font-weight:bold; '>return</span> <span style='color:#808030; '>-</span><span style='color:#008c00; '>1000000000</span><span style='color:#000000; '>;</span><span style='color:#696969; '>//Usamos menos infinito (o un numero muy chiquito) porque es el neutro de maximo.</span>
+   <span style='color:#000000; '>}</span>
+   <span style='color:#696969; '>//Existe al menos un nodo rojo debajo, buscalos.</span>
+   <span style='color:#000080; font-weight:bold; '>int</span> izq <span style='color:#808030; '>=</span> buscaRojos<span style='color:#808030; '>(</span>i<span style='color:#808030; '>,</span>j<span style='color:#808030; '>,</span>l<span style='color:#808030; '>,</span><span style='color:#808030; '>(</span>l<span style='color:#808030; '>+</span>r<span style='color:#808030; '>)</span><span style='color:#808030; '>/</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>,</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+   <span style='color:#000080; font-weight:bold; '>int</span> der <span style='color:#808030; '>=</span> buscaRojos<span style='color:#808030; '>(</span>i<span style='color:#808030; '>,</span>j<span style='color:#808030; '>,</span><span style='color:#808030; '>(</span>l<span style='color:#808030; '>+</span>r<span style='color:#808030; '>)</span><span style='color:#808030; '>/</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>,</span>r<span style='color:#808030; '>,</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+   <span style='color:#000080; font-weight:bold; '>return</span> <span style='color:#603000; '>max</span><span style='color:#808030; '>(</span>izq<span style='color:#808030; '>,</span>der<span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+<span style='color:#000000; '>}</span>
+</pre>
+Pero esto todavia presenta problemas, por ejemplo, si dos operacions sumar(i,j,x) se interseccionan, puede causar respuestas incorrectas, por ello, en las funciones recursivas hay que actualizar el valor de ST[ind] y limpiar Lazy[ind], asi como propagar el valor de Lazy a los dos hijos, pues ellos debe ser notificados de que han sido actualizados.
+<br> Todo esto lo podemos hacer en una funcion que recibe el indice del nodo
+<pre style='color:#000000;background:#ffffff;'><span style='color:#000080; font-weight:bold; '>void</span> propagar <span style='color:#808030; '>(</span><span style='color:#000080; font-weight:bold; '>int</span> ind<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+   ST<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span> <span style='color:#808030; '>+</span><span style='color:#808030; '>=</span> Lazy<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span><span style='color:#000000; '>;</span>
+   Lazy<span style='color:#808030; '>[</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>]</span> <span style='color:#808030; '>+</span><span style='color:#808030; '>=</span> Lazy<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span><span style='color:#000000; '>;</span>
+   Lazy<span style='color:#808030; '>[</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>]</span> <span style='color:#808030; '>+</span><span style='color:#808030; '>=</span> Lazy<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span><span style='color:#000000; '>;</span>
+   Lazy<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span><span style='color:#808030; '>=</span><span style='color:#008c00; '>0</span><span style='color:#000000; '>;</span>
+<span style='color:#000000; '>}</span>
+</pre>
+Entonces llamamos esa funcion en las consultas y actualizaciones, dejandonos el siguiente codigo:
+<pre style='color:#000000;background:#ffffff;'><span style='color:#696969; '>//Tamano de A</span>
+<span style='color:#000080; font-weight:bold; '>int</span> N<span style='color:#000000; '>;</span>
+<span style='color:#000080; font-weight:bold; '>int</span> A<span style='color:#808030; '>[</span><span style='color:#008c00; '>10000</span><span style='color:#808030; '>]</span><span style='color:#000000; '>;</span>
+<span style='color:#696969; '>//El segment tree</span>
+<span style='color:#000080; font-weight:bold; '>int</span> ST<span style='color:#808030; '>[</span><span style='color:#008c00; '>20000</span><span style='color:#808030; '>]</span><span style='color:#000000; '>;</span>
+<span style='color:#696969; '>//Aqui se guardan los valores 'd' de cada nodo</span>
+<span style='color:#000080; font-weight:bold; '>int</span> Lazy<span style='color:#808030; '>[</span><span style='color:#008c00; '>20000</span><span style='color:#808030; '>]</span><span style='color:#000000; '>;</span>
+
+<span style='color:#000080; font-weight:bold; '>void</span> propagar <span style='color:#808030; '>(</span><span style='color:#000080; font-weight:bold; '>int</span> ind<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+   ST<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span> <span style='color:#808030; '>+</span><span style='color:#808030; '>=</span> Lazy<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span><span style='color:#000000; '>;</span>
+   Lazy<span style='color:#808030; '>[</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>]</span> <span style='color:#808030; '>+</span><span style='color:#808030; '>=</span> Lazy<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span><span style='color:#000000; '>;</span>
+   Lazy<span style='color:#808030; '>[</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>]</span> <span style='color:#808030; '>+</span><span style='color:#808030; '>=</span> Lazy<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span><span style='color:#000000; '>;</span>
+   Lazy<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span><span style='color:#808030; '>=</span><span style='color:#008c00; '>0</span><span style='color:#000000; '>;</span>
+<span style='color:#000000; '>}</span>
+
+
+<span style='color:#696969; '>//Funcion que construye el segment tree</span>
+<span style='color:#000080; font-weight:bold; '>void</span> generarSegmentTree<span style='color:#808030; '>(</span><span style='color:#000080; font-weight:bold; '>int</span> ini<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> fin<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> ind<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+    <span style='color:#000080; font-weight:bold; '>if</span> <span style='color:#808030; '>(</span>ini <span style='color:#808030; '>=</span><span style='color:#808030; '>=</span> fin<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+        <span style='color:#696969; '>//Nos encontramos en una hoja, su valor es del arreglo A</span>
+        ST<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span><span style='color:#808030; '>=</span>A<span style='color:#808030; '>[</span>ini<span style='color:#808030; '>]</span><span style='color:#000000; '>;</span>
+        <span style='color:#000080; font-weight:bold; '>return</span><span style='color:#000000; '>;</span>
+    <span style='color:#000000; '>}</span>
+    <span style='color:#696969; '>//Generar el hijo izquierdo</span>
+    generarSegmentTree<span style='color:#808030; '>(</span>ini<span style='color:#808030; '>,</span> <span style='color:#808030; '>(</span>ini<span style='color:#808030; '>+</span>fin<span style='color:#808030; '>)</span><span style='color:#808030; '>/</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>,</span> <span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+    <span style='color:#696969; '>//Generar el hijo derecho</span>
+    generarSegmentTree<span style='color:#808030; '>(</span><span style='color:#808030; '>(</span>ini<span style='color:#808030; '>+</span>fin<span style='color:#808030; '>)</span><span style='color:#808030; '>/</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>,</span>fin<span style='color:#808030; '>,</span> <span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+    <span style='color:#696969; '>//Combinar los dos hijos en nosotros, su padre</span>
+    ST<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span><span style='color:#808030; '>=</span><span style='color:#603000; '>max</span><span style='color:#808030; '>(</span>ST<span style='color:#808030; '>[</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>]</span><span style='color:#808030; '>,</span>ST<span style='color:#808030; '>[</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>]</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+<span style='color:#000000; '>}</span>
+
+
+<span style='color:#000080; font-weight:bold; '>void</span> sumar<span style='color:#808030; '>(</span><span style='color:#000080; font-weight:bold; '>int</span> i<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> j<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> x<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+   sumardARojos<span style='color:#808030; '>(</span>i<span style='color:#808030; '>,</span>j<span style='color:#808030; '>,</span>x<span style='color:#808030; '>,</span><span style='color:#008c00; '>0</span><span style='color:#808030; '>,</span>N<span style='color:#808030; '>-</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>,</span><span style='color:#008c00; '>0</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>   
+
+<span style='color:#000000; '>}</span>
+
+<span style='color:#696969; '>//busca nodos rojos del rango i, j a partir del nodo ind [l,r], y les suma x en Lazy[ind]</span>
+<span style='color:#000080; font-weight:bold; '>void</span> sumardARojos<span style='color:#808030; '>(</span><span style='color:#000080; font-weight:bold; '>int</span> i<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> j<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> x<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> l<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> r<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> ind<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+   <span style='color:#696969; '>//El rango del nodo ind [l,r] esta perfectamente contenido en [i,j]</span>
+   <span style='color:#000080; font-weight:bold; '>if</span> <span style='color:#808030; '>(</span>i <span style='color:#808030; '>&lt;</span><span style='color:#808030; '>=</span>l <span style='color:#808030; '>&amp;</span><span style='color:#808030; '>&amp;</span> r <span style='color:#808030; '>&lt;</span><span style='color:#808030; '>=</span>r<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+      <span style='color:#696969; '>//Este nodo es rojo</span>
+     lazy<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span><span style='color:#808030; '>+</span><span style='color:#808030; '>=</span>x<span style='color:#000000; '>;</span>
+     <span style='color:#000080; font-weight:bold; '>return</span><span style='color:#000000; '>;</span>
+   <span style='color:#000000; '>}</span>
+   propagar<span style='color:#808030; '>(</span>ind<span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+   <span style='color:#000080; font-weight:bold; '>if</span> <span style='color:#808030; '>(</span>l <span style='color:#808030; '>></span> j <span style='color:#808030; '>|</span><span style='color:#808030; '>|</span> r <span style='color:#808030; '>&lt;</span> i<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+      <span style='color:#696969; '>//El rango de este nodo esta completamente fuera de [i,j] nada de este subarbol es rojo;</span>
+      <span style='color:#000080; font-weight:bold; '>return</span><span style='color:#000000; '>;</span>
+   <span style='color:#000000; '>}</span>
+   <span style='color:#696969; '>//Existe al menos un nodo rojo debajo, buscalos.</span>
+   sumardARojos<span style='color:#808030; '>(</span>i<span style='color:#808030; '>,</span>j<span style='color:#808030; '>,</span>l<span style='color:#808030; '>,</span><span style='color:#808030; '>(</span>l<span style='color:#808030; '>+</span>r<span style='color:#808030; '>)</span><span style='color:#808030; '>/</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>,</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+   sumardARojos<span style='color:#808030; '>(</span>i<span style='color:#808030; '>,</span>j<span style='color:#808030; '>,</span><span style='color:#808030; '>(</span>l<span style='color:#808030; '>+</span>r<span style='color:#808030; '>)</span><span style='color:#808030; '>/</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>,</span>r<span style='color:#808030; '>,</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+   <span style='color:#696969; '>//Recalcular el valor de este nodo</span>
+   ST<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span><span style='color:#808030; '>=</span><span style='color:#603000; '>max</span><span style='color:#808030; '>(</span>ST<span style='color:#808030; '>[</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>]</span><span style='color:#808030; '>+</span>Lazy<span style='color:#808030; '>[</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>]</span><span style='color:#808030; '>,</span>ST<span style='color:#808030; '>[</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>]</span><span style='color:#808030; '>+</span>Lazy<span style='color:#808030; '>[</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>]</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+
+<span style='color:#000000; '>}</span>
+
+<span style='color:#000080; font-weight:bold; '>void</span> actualizar<span style='color:#808030; '>(</span><span style='color:#000080; font-weight:bold; '>int</span> i<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> x<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+    caminoAmarillo<span style='color:#808030; '>(</span>i<span style='color:#808030; '>,</span>x<span style='color:#808030; '>,</span><span style='color:#008c00; '>0</span><span style='color:#808030; '>,</span>N<span style='color:#808030; '>-</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>,</span><span style='color:#008c00; '>0</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+<span style='color:#000000; '>}</span>
+
+<span style='color:#696969; '>//Recorre el camino amarillo para cambiar el nodo [i,i] al valor x, desde el nodo [l,r] con indice ind en ST</span>
+<span style='color:#000080; font-weight:bold; '>void</span> caminoAmarillo<span style='color:#808030; '>(</span><span style='color:#000080; font-weight:bold; '>int</span> i<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> x<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> l<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> r<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> ind<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+   <span style='color:#696969; '>//Estamos en una hoja, y por lo tanto en [i,i] </span>
+   <span style='color:#000080; font-weight:bold; '>if</span> <span style='color:#808030; '>(</span>l<span style='color:#808030; '>=</span><span style='color:#808030; '>=</span>r<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+      ST<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span><span style='color:#808030; '>+</span><span style='color:#808030; '>=</span>x<span style='color:#000000; '>;</span>
+      <span style='color:#000080; font-weight:bold; '>return</span><span style='color:#000000; '>;</span>
+   <span style='color:#000000; '>}</span>
+   propagar<span style='color:#808030; '>(</span>ind<span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+   <span style='color:#696969; '>//calculamos la mitad del rango</span>
+   <span style='color:#000080; font-weight:bold; '>int</span> mid <span style='color:#808030; '>=</span><span style='color:#808030; '>(</span>l<span style='color:#808030; '>+</span>r<span style='color:#808030; '>)</span><span style='color:#808030; '>/</span><span style='color:#008c00; '>2</span><span style='color:#000000; '>;</span>
+    
+   <span style='color:#000080; font-weight:bold; '>if</span> <span style='color:#808030; '>(</span>i <span style='color:#808030; '>&lt;</span><span style='color:#808030; '>=</span> mid<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+       <span style='color:#696969; '>//El nodo[i,i] pertenece al hijo izquierdo</span>
+       caminoAmarillo<span style='color:#808030; '>(</span>i<span style='color:#808030; '>,</span>x<span style='color:#808030; '>,</span>l<span style='color:#808030; '>,</span>mid<span style='color:#808030; '>,</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+   <span style='color:#000000; '>}</span> <span style='color:#000080; font-weight:bold; '>else</span> <span style='color:#000000; '>{</span>
+       <span style='color:#696969; '>//El nodo[i,i] pertenece al hijo derecho</span>
+       caminoAmarillo<span style='color:#808030; '>(</span>i<span style='color:#808030; '>,</span>x<span style='color:#808030; '>,</span>mid<span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>,</span>r<span style='color:#808030; '>,</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+   <span style='color:#000000; '>}</span>
+   <span style='color:#696969; '>//Recalcular ST[ind]</span>
+   ST<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span><span style='color:#808030; '>=</span><span style='color:#603000; '>max</span><span style='color:#808030; '>(</span>ST<span style='color:#808030; '>[</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>]</span><span style='color:#808030; '>,</span>ST<span style='color:#808030; '>[</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>]</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+<span style='color:#000000; '>}</span>
+
+
+<span style='color:#696969; '>//Calcula la suma del rango [i,j]</span>
+<span style='color:#000080; font-weight:bold; '>int</span> maximoEntre<span style='color:#808030; '>(</span><span style='color:#000080; font-weight:bold; '>int</span> i<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> j<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+  <span style='color:#000080; font-weight:bold; '>return</span> buscaRojos<span style='color:#808030; '>(</span>i<span style='color:#808030; '>,</span> j<span style='color:#808030; '>,</span> <span style='color:#008c00; '>0</span><span style='color:#808030; '>,</span> N<span style='color:#808030; '>-</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>,</span><span style='color:#008c00; '>0</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+<span style='color:#000000; '>}</span>
+
+<span style='color:#696969; '>//busca nodos rojos del rango [i,j] a partir del nodo ind que abarca el subrango [l,r]</span>
+<span style='color:#000080; font-weight:bold; '>int</span> buscaRojos<span style='color:#808030; '>(</span><span style='color:#000080; font-weight:bold; '>int</span> i<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> j<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> l<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> r<span style='color:#808030; '>,</span> <span style='color:#000080; font-weight:bold; '>int</span> ind<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+   <span style='color:#696969; '>//El rango del nodo ind [l,r] esta perfectamente contenido en [i,j]</span>
+   <span style='color:#000080; font-weight:bold; '>if</span> <span style='color:#808030; '>(</span>i <span style='color:#808030; '>&lt;</span><span style='color:#808030; '>=</span>l <span style='color:#808030; '>&amp;</span><span style='color:#808030; '>&amp;</span> r <span style='color:#808030; '>&lt;</span><span style='color:#808030; '>=</span>r<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+      <span style='color:#696969; '>//Este nodo es rojo</span>
+      <span style='color:#000080; font-weight:bold; '>return</span> ST<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span><span style='color:#808030; '>+</span>Lazy<span style='color:#808030; '>[</span>ind<span style='color:#808030; '>]</span><span style='color:#000000; '>;</span>
+   <span style='color:#000000; '>}</span>
+   
+   <span style='color:#000080; font-weight:bold; '>if</span> <span style='color:#808030; '>(</span>l <span style='color:#808030; '>></span> j <span style='color:#808030; '>|</span><span style='color:#808030; '>|</span> r <span style='color:#808030; '>&lt;</span> i<span style='color:#808030; '>)</span> <span style='color:#000000; '>{</span>
+      <span style='color:#696969; '>//El rango de este nodo esta completamente fuera de [i,j] nada de este subarbol es rojo;</span>
+      <span style='color:#000080; font-weight:bold; '>return</span> <span style='color:#808030; '>-</span><span style='color:#008c00; '>1000000000</span><span style='color:#000000; '>;</span><span style='color:#696969; '>//Usamos menos infinito (o un numero muy chiquito) porque es el neutro de maximo.</span>
+   <span style='color:#000000; '>}</span>
+   propagar<span style='color:#808030; '>(</span>ind<span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+   <span style='color:#696969; '>//Existe al menos un nodo rojo debajo, buscalos.</span>
+   <span style='color:#000080; font-weight:bold; '>int</span> izq <span style='color:#808030; '>=</span> buscaRojos<span style='color:#808030; '>(</span>i<span style='color:#808030; '>,</span>j<span style='color:#808030; '>,</span>l<span style='color:#808030; '>,</span><span style='color:#808030; '>(</span>l<span style='color:#808030; '>+</span>r<span style='color:#808030; '>)</span><span style='color:#808030; '>/</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>,</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+   <span style='color:#000080; font-weight:bold; '>int</span> der <span style='color:#808030; '>=</span> buscaRojos<span style='color:#808030; '>(</span>i<span style='color:#808030; '>,</span>j<span style='color:#808030; '>,</span><span style='color:#808030; '>(</span>l<span style='color:#808030; '>+</span>r<span style='color:#808030; '>)</span><span style='color:#808030; '>/</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>+</span><span style='color:#008c00; '>1</span><span style='color:#808030; '>,</span>r<span style='color:#808030; '>,</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>*</span>ind<span style='color:#808030; '>+</span><span style='color:#008c00; '>2</span><span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+   <span style='color:#000080; font-weight:bold; '>return</span> <span style='color:#603000; '>max</span><span style='color:#808030; '>(</span>izq<span style='color:#808030; '>,</span>der<span style='color:#808030; '>)</span><span style='color:#000000; '>;</span>
+<span style='color:#000000; '>}</span>
+</pre>
+Todo esto reduce la complejidad de sumar (i, j, x) a $O(log\ N)$, permitiendo realizar todas estas operaciones de forma rápida. Pero hay que notar que no a todas las operaciones se les puede aplicar lazy propagation, por ejemplo, sumas de rango con preguntas de mínimo común múltiplo no funciona.

@@ -1,0 +1,98 @@
+<html>
+<head>
+   
+
+<style>
+    .field {
+        width: 100%;
+        height: 25px;
+        
+    }
+    .Container {
+        
+        box-shadow: 0px 0px 3px #5a5a5a;
+        margin: 10px;
+        padding: 10px;
+        border-radius:7px;
+        background-color: #FAFAFA;
+        width:31%;
+    }
+    body{
+        background-color: #F2F2F2;
+    }
+    /* On small screens, set height to 'auto' for sidenav and grid */
+@media screen and (max-width: 767px) {
+  body {
+    background-color: #FAFAFA;
+  }
+  .Container {
+    
+  box-shadow: 0px 0px 0px #5a5a5a;
+  margin: 0px;
+  padding: 5px;
+  background-color: #FAFAFA;
+  }
+  .row.content {height:auto;} 
+}
+
+
+</style>
+ <link type="text/css" rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+
+</head>
+<body>
+
+<center>
+ <div class="Container">
+     <h1>Iniciar sesion</h1>
+       <br/>
+       <input type="text" placeholder="Usuario" class="field" id="user">
+       <br/>
+       <br/>
+       <input type="password" placeholder="Contraseña" class="field" id="password">
+       <br>
+       <br/>
+       <div style="text-align:left " >
+            <button class="btn-primary" id="loginBTN">Iniciar sesion</button>
+        </div>
+    </div>
+</center>
+    <script src="https://www.gstatic.com/firebasejs/5.0.4/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyBgJ53fGm0ADFXwsxlUCbgd_dt2xQ4hTlY",
+    authDomain: "kcoderguide.firebaseapp.com",
+    databaseURL: "https://kcoderguide.firebaseio.com",
+    projectId: "kcoderguide",
+    storageBucket: "kcoderguide.appspot.com",
+    messagingSenderId: "952044042126"
+  };
+  firebase.initializeApp(config);
+ 
+ const btnLogin = document.getElementById('loginBTN');
+ const userInp = document.getElementById('user');
+ const passInp = document.getElementById('password');
+
+ btnLogin.addEventListener('click',e=>{
+    var Email = userInp.value;
+    var Password = passInp.value;
+    firebase.auth().signInWithEmailAndPassword(Email, Password).catch(e=>console.log("Error log in"));
+    
+ });
+
+firebase.auth().onAuthStateChanged(firebaseUser=> {
+    if (firebaseUser) {
+        console.log(firebaseUser);
+        window.location.replace("/dashboard");
+    } else {
+    }
+})
+
+  
+</script>
+
+
+
+   </body>
+   </html>

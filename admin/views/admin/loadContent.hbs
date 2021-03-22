@@ -1,0 +1,58 @@
+<html>
+    <head>
+        <title>Loading</title>
+        
+    </head>
+    <body>
+        Loading...
+            <script src="https://www.gstatic.com/firebasejs/5.0.4/firebase.js"></script>
+
+            <script>
+              
+ var config = {
+    apiKey: "AIzaSyBgJ53fGm0ADFXwsxlUCbgd_dt2xQ4hTlY",
+    authDomain: "kcoderguide.firebaseapp.com",
+    databaseURL: "https://kcoderguide.firebaseio.com",
+    projectId: "kcoderguide",
+    storageBucket: "kcoderguide.appspot.com",
+    messagingSenderId: "952044042126"
+  };
+  firebase.initializeApp(config);       
+            </script>
+  <script>
+   function LoadContent() {
+      
+        firebase.auth().currentUser.getIdToken(true).then(
+          function(ID) {
+            var xmp = new XMLHttpRequest();
+           
+            var last = window.location.pathname; 
+            xmp.open('GET',last+'/auth');
+            xmp.setRequestHeader('authorization',ID);         
+
+            xmp.send();
+            xmp.onreadystatechange=function() {
+              document.open();
+              document.write(xmp.response);
+              document.close();
+            }
+          }
+        ) 
+        
+      
+    }
+
+
+
+    
+firebase.auth().onAuthStateChanged(firebaseUser=> {
+    if (firebaseUser) {
+            LoadContent();
+    } else {
+        window.location.replace('/');
+    }
+})
+
+  </script>
+    </body>
+</html>

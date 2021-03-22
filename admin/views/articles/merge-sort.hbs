@@ -1,0 +1,147 @@
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "TechArticle",
+  "description": "Algoritmo de ordenamiento rapido y estable, basado en divide y venceras.",
+  "name": "Ordenamiento por mezcla",
+  "headline":"Ordenaminto por inserci   on (Insertion Sort)",
+  "inLanguage":"es-xl",
+  "sameAs":"https://es.wikipedia.org/wiki/Ordenamiento_por_mezcla",
+  "keywords":"algoritmo,español,ordenamiento,merge,sort,mezcla,ejemplo,implementación,complejidad",
+  "image":"http://algoritmolandia.com/images/articles/sorts/merge_sort/spread.png"
+}
+</script>
+El <b>Ordenamiento por mezcla</b> o <b>Merge sort</b> es un metodo de ordenamiento rapido y estable. <br/>
+Es más rápido que los ordenamientos cuadraticos, pero menos intuitivo.<br/>
+<br/>
+Este metodo de ordenamiento se basa en partir el arreglo en dos mitades, ordenar cada mitad con el mismo metodo, hecho esto, combinamos los dos arreglos en un arreglo unido.<br/>
+Para entenderlo mejor recomiendo primero entender la tecnica de <a href="/divide-y-venceras">divide y venceras</a>.<br/>
+Vamos a analizarlo paso por paso.<br/><br/>
+
+Digamos que tememos la siguiente funcion $ordena([4,2,5,8,3,1,6,7])$<br/>
+
+Entonces el metodo ordena, hará lo siguiente:<br/>
+<div class="tabbuled">
+Queremos ordenar el siguiente arreglo $[4,2,5,8,3,1,6,7]$, entonces lo parte en dos arreglos y ordena cada mitad llamando a los siguiente metodo $ordena([4,2,5,8])$ y $ordena[(3,1,6,7)]$
+<br/>
+Después de llamar a los dos metodos obtenemos dos arreglos ordenados. $[2,4,5,8]$ y $[1,3,6,7]$, entonces mezclamos los dos arreglos en uno, de forma que alfinal tenemos el arreglo $[1,2,3,4,5,6,7,8]$ Entonces terminamos.
+<br/>
+</div>
+
+Como podimos observar, en este metodo hay que entender dos cosas esenciales, como separar el arreglo en la mitad, y como mezclar dos arreglos ordenados en un solo arreglo ordenado.
+<br/>
+<h2>Mezcla</h2>
+Veremos un problema que es esencial para lograr el ordenamiento por mezcla.<br/>
+Tenemos dos arreglos $A[]$ y $B[]$, ambos ordenados de menor a mayor, quermos tomar sus elementos y meterlos en un arreglo $C[]$, de forma que este también este ordenado de menor a mayor.
+<br/>
+Para lograr esto haremos lo siguiente:<br/>
+<div class="tabbuled">
+    Mientras $A$ tenga elementos o $B$ tenga elementos:
+    <div class="tabbuled">
+        <li>Si $A$ no esta vacio y $B$ tampoco esta vacio, entonces tomamos el menor entre $A[0]$ y $B[0]$, lo eliminamos de su arreglo y lo insertamos como el ultimo elemento de $C$</li>
+        <li>Si solo $A$ tiene elementos, quita el primer elemento de $A$ y lo coloca al final de $C$ </li>
+        <li>Si solo $B$ tiene elementos, quita el primer elemento de $B$ y lo coloca al final de $C$ </li>
+    </div>  
+    
+</div>
+Para que lo de arriba quede mas claro, a continuacion se muestra una imagen para ejemplificarlo. (El arreglo de arriba es $C$, el de la izquierda abajo es $A$ y el otro es $B$).<br/>
+<img src="/images/articles/sorts/merge_sort/sort.gif" class="article-img"/>
+<br/>
+Una vez que entendimos como funciona la mezcla, ahora toca entender como funciona la division.
+<h2>Diviciones</h2>
+Para entender como el metodo va partiendo de dos en dos, primero decidiremos que tenemos un arreglo $A$ de $N$ elementos enumerados a partir del $0$ ($A= \{A[0],A[1],...,A[N-1]\}$)<br/>
+Entonces tenemos un metodo llamado $ordena(i,j)$, que quiere decir, ordena el arreglo desde $i$, hasta $j$, por lo tanto para ordenar todo el arreglo se debe llamar a $ordena(0,N-1)$<br/>
+<br/>
+Para empezar a crear este metodo, primero hay que ver que si nos piden ordenar un solo numero, es decir $i=j$, entonces no tenemos que hacer nada porque un arreglo con solo un elemento ya esta ordenado. 
+Pero si nos piden ordenar un arreglo con dos o mas elementos, en otras palabras $i\neq j$, entonces llamamos a $ordenar(i,mid)$ y $ordenar(mid+1,j)$, si $mid$ es el punto medio entre $i$ y $j$, es decir, $mid=\frac{i+j}{2}$, para luego mezclar el segmento $[i,mid]$ con el segmento $[mid+1,j]$.
+<br/>
+Utilizaremos la siguiente imagen para ejemplificar lo de arriba<br/>
+
+<img src="/images/articles/sorts/merge_sort/spread.png" class="article-img"/>
+<br/>
+En resumen el pseudocodigo sería el siguiente<br>
+
+<pre><code class="pseudo">Arreglo A;
+
+metodo ordenar (i, j){
+    Si (i=j) {
+        Terminar ordenar;
+    }
+    Sino {
+        int mid = (i+j)/2;    
+        llamar ordenar(i,mid);
+        llamar ordenar(mid+1,j);
+        Mezclar A[i,...,mid] con A[mid+1,...,j];
+        Terminar ordenar;
+    }
+}</code></pre>
+
+Este pseudocodigo ya es la idea completa del ordenamiento por mezcla, pero a continuacion veremos como implementarlo de forma más formal.
+<h2>Implementacion</h2>
+
+A continuación se podrá observar una implementación del ordenamiento, está implementación requiere de un arreglo extra para utilizarlo como contenedor temporal.
+
+<pre><code class="cpp">int A[10]={5,1,4,7,3,2,8,6,9,10};
+int C[10];
+
+void ordena(int i, int j) {
+    //Si i es igual a j, entonces queremos ordenar un elemento, y porque solo es uno ya acabamos.
+    if (i == j) {
+        return;
+    } else {
+        //De otra forma, partimos el arreglo en dos y ordenamos cada mitad.
+        int mid=(i+j)/2;
+        ordena(i,mid);
+        ordena(mid+1,j);
+
+        //Después los mezclamos en el arreglo C.
+        int inicio1=i, inicio2=mid+1;
+        for (int cont = i; cont &lt;= j; cont++) {
+            if (inicio1 &lt;= mid &amp;&amp; inicio2 &lt;= j) {
+                //Ambas mitades tienen elementos entonces elegimos la menor entre A[inicio1] y A[inicio2].
+                if (A[inicio1] &lt; A[inicio2]) {
+                    C[cont]=A[inicio1];
+                    inicio1++;
+                } else {
+                    C[cont]=A[inicio2];
+                    inicio2++;
+                }
+            } else if (inicio1 &lt;= mid) {
+                //Solo la primera mitad tiene elementos, por lo tanto tomamos el elemento de alli.
+                C[cont] = A[inicio1];
+                inicio1++;
+            } else {
+                //Solo la segunda mitad tiene elementos, por lo tanto tomamos el elemento de alli.
+                C[cont] = A[inicio2];
+                inicio2++;
+            }
+        }
+
+        //Ahora colocamos todos los elementos de C[i...j] en A[i...j].
+        for (int cont = i; cont &lt;= j; cont++) {
+            A[cont]=C[cont];
+        }
+    }
+}
+
+int main () {
+    printf("Arreglo original:\n");
+    for (int i =0; i &lt; 10;i++) {
+        printf("%d ",A[i]);
+    }
+    
+    ordena(0,9);
+    printf("\nArreglo ordenado:\n");
+    for (int i =0; i &lt; 10;i++) {
+        printf("%d ",A[i]);
+    }
+}
+</code>
+</pre>
+<h2>Complejidad</h2>
+Para calcular la complejidad primero hay que entender que el metodo tiene distintos niveles, en el nivel 1 esta nuestro arreglo original, luego este es partido y cada mitad es colocada en el nivel 2, luego cada mitad se divide en otras dos para tener cuatro piezas en el nivel 3, y asi se sigue.<br/> Esto se puede ver mejor en la siguiente imagen.<br/>
+
+<img src="/images/articles/sorts/merge_sort/spread.png" class="article-img"/>
+<br/>
+Debido a que vamos dividiendo de dos en dos, por cada nivel, tendremos aproximadamente $log_2N$ niveles, y cada nivel mezclara $N$ elementos, y debido a que la mezcla itera por cada elemento, su complejidad es lineal $O(N).$<br/>
+Es decir, tenemos $logN$ y cada uno es procesado en un tiempo de $N$, es decir la complejidad del algoritmo es $O(NlogN)$, siendo un algoritmo de ordenamiento rápido.

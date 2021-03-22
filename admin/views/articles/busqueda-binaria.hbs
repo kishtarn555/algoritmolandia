@@ -1,0 +1,63 @@
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "TechArticle",
+  "description": "La Búsquda binaria es una técnica útil para encontrar un valor en un rango de forma rápida,",
+  "name": "Busqueda binaria",
+  "headline":"Busqueda binaria",
+  "inLanguage":"es-xl",
+  "sameAs":"https://es.wikipedia.org/wiki/B%C3%BAsqueda_binaria",
+  "keywords":"algoritmo,español,busqueda,binaria,binary,search,ejemplo,implementación,complejidad",
+  "image":"http://algoritmolandia.com/images/articles/search/binary_search/img1.png"
+}
+</script>
+La <b> Búsquda binaria</b> es una técnica útil para encontrar un valor en un rango de forma rápida, siempre y cuanto se puede evaluar si una posición esta antes o después del valor buscado.
+<br>
+Para entender lo escrito arriba mejor, vamos a poner un problema de ejemplo.
+<br>
+<br>
+Imagina que un día estas jugando con un amigo a atinarle a un número secreto entre $1$ y $100$, puedes preguntar si el número secreto es mayor que otro, (Nota que si preguntas por el número simplemente te va a contestar que no es mayor, porque es igual) pero hacer esa pregunta te penaliza 10 puntos.
+<br>
+Tú quieres jugar de forma que pierdas la mayor cantidad de puntos posibles. Así que has ideado una estrategia que necesite la menor cantidad de preguntas.<br><br/>
+Primero preguntas por el número $50$, si te dice que es mayor, sabes que la respuesta está entre $[51, 100]$, si no está entre $[1, 50]$.
+<br/>
+Supongamos que era mayor, entonces preguntamos por el número que está entre $[51,100]$, el $75$. Supongamos que está vez no era mayor, entonces está entre $[51,75]$. Luego repetimos, preguntamos el número que este entre $51$ y $75$, el $63$, digamos que es mayor. Entonces está entre $[64,75]$, y continuamos repitiendo lo mismo hasta encontrar el valor.
+<br/>
+A continuación se muestra una imagen donde se muestra el comportamiento de la búsqueda binaria.
+<br/>
+<img src="/images/articles/search/binary_search/img1.png"/><br/>
+Podemos ver como la búsqueda binaria elige el punto medio del rango, y obtiene si está a la izquierda o derecha, si está a la izquierda desecha el lado derecho y viceversa, luego repite el mismo procedimiento hasta que solo tiene un elemento en su rango de búsqueda.
+<br/>
+Es decir lo que hace la búsqueda binaria es parte en dos el rango de búsqueda, desecha una mitad y repite lo mismo en el otro hasta que el rango sea suficientemente pequeño para tomarlo como la respuesta.
+<br/>
+También por esto es importante reconocer que no todo se puede buscar con está técnica, ya que se debe poder saber si la respuesta está a la izquierda o a la derecha de un punto, cosa que no siempre es posible.
+<h2>Implementación</h2>
+A continuación se presenta una búsqueda binaria para buscar un número $X$ desconocido.
+<pre><code class="cpp">int X=57;
+int busca() {
+
+    int inicio=1, final=100;
+    while(inicio!=final) {
+        int punto_medio = (inicio+final)/2;
+        if (punto_medio &lt; X) {
+            inicio=punto_medio+1;
+        } else {
+            final=punto_medio;
+        }
+
+    }
+
+    return inicio;
+}
+
+int main (){
+    printf("El siguiente codigo encontrara X, puede cambiar su valor para comprobarlo\n");
+    printf("X = %d", busca());
+
+}
+</code></pre>
+
+
+
+<h2>Complejidad</h2>
+La búsqueda binaria va partiendo el tamaño de su rango de búsqueda a la mitad cada vez, por lo que tiene una complejidad de $O(logN)$, aunque es posible que la complejidad de detectar si esta a la izquierda o derecha de un punto no sea constante, causando que algunas búsquedas binarias tengan complejidades mayores, como $O(NlongN)$

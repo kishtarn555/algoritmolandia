@@ -1,0 +1,158 @@
+.HeadBar {
+  padding: 5px;
+  background: #F9F9F9;
+  border-bottom: 1px solid grey;
+  /* position: absolute; */
+  z-index: 1;
+  
+
+}
+
+body {
+  
+  background: #F4F4F4;
+
+}
+
+.logo-container {
+  padding-bottom:5px; 
+}
+.searchBar {
+  width: calc(100% - 50px);
+}
+
+#fade-screen {
+  display: none;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: #0000005F;
+}
+.social-icon {
+  color:black;
+}
+.social-icon:hover {
+  color:#6CB9F0;
+}
+.SideBar {
+  
+  overflow-y: auto;
+  height: 100%;
+  min-height: 100vh;
+  position: fixed;
+  
+  transition: all 0.35s;
+  
+  top:0;
+  left: -260px;
+  border-right: 1px solid grey;
+  
+  background-color: #F5f5f5;
+  min-width: 250px;
+  max-width: 250px;
+  box-shadow: 0px 0px 10px black;
+  /* margin-left: -250px; */
+}
+
+.SideBar-Header {
+  /* background-color: #DCF6FA; */
+  padding: 15px;
+}
+
+.bar-button:hover {
+  color: #6CB9F0;
+}
+
+.Sidebar-list li {
+  padding-left: 15px;
+  font-size: 1.3em;
+  vertical-align: middle;
+  background-color: #F3FAFF;
+  
+  border-bottom: 1px solid grey;
+  border-top: 1px solid grey;
+}
+.Sidebar-list li:hover {
+  padding-left: 15px;
+  font-size: 1.3em;
+  vertical-align: middle;
+  background-color: #E3EAEF;
+  
+  border-bottom: 1px solid grey;
+  border-top: 1px solid grey;
+}
+
+.Sidebar-list .disabled {
+  padding-left: 15px;
+  font-size: 1.3em;
+  vertical-align: middle;
+  background-color: #DFDFE4;
+  
+  pointer-events: none;
+  cursor: default;
+  border-bottom: 1px solid grey;
+  border-top: 1px solid grey;
+}
+
+.Sidebar-list .disabled:hover {
+  padding-left: 15px;
+  font-size: 1.3em;
+  pointer-events: none;
+  cursor: default;
+  vertical-align: middle;
+  background-color: #DFDFE4;
+  
+  border-bottom: 1px solid grey;
+  border-top: 1px solid grey;
+}
+.Sidebar-list a {
+  display: block;
+  color: inherit;  
+  text-decoration: none;
+}
+
+.SideBar-content {
+  /* display: block; */
+  
+  background-color: red;
+  
+
+}
+.SideBar-footer {
+  margin-bottom: 10px;
+
+}
+.feedbackSugerencias {
+  width: 90%;
+  min-height: 100px;
+}
+
+.Container {
+  box-shadow: 0px 0px 3px #5a5a5a;
+  margin: 10px;
+  padding: 10px;
+  border-radius:7px;
+  background-color: #FAFAFA;
+
+}
+
+code {
+  
+border: 1px solid grey;
+}
+/* On small screens, set height to 'auto' for sidenav and grid */
+@media screen and (max-width: 767px) {
+  body {
+    background-color: #FAFAFA;
+  }
+  .Container {
+    
+  box-shadow: 0px 0px 0px #5a5a5a;
+  margin: 0px;
+  padding: 5px;
+  background-color: #FAFAFA;
+  }
+  .row.content {height:auto;} 
+}

@@ -1,0 +1,285 @@
+El <b>selection sort</b> es un algoritmo de ordenamiento considerado entre los más básicos, debido a su complejidad $O(N^{2})$ y a que tener la idea de como hacerlo es relativamente
+fácil ya que es la manera por la que en general ordenamos en la vida real. Según su implementación puede usar un arreglo extra de memoria.
+<br/>
+<br/>
+<h3>Explicación</h3>
+<hr/>
+Digamos que tenemos un arreglo de enteros <FONT COLOR="gray">(aunque funciona para cualquier clase de datos)</FONT> \(A\) de tamaño $N$, el cual queremos ordenar de menor a mayor,
+este algoritmo lo hace de la siguiente manera: Elije el menor número de los números de la lista, y lo ordena en un arreglo aparte, y después el siguiente, y así hasta que ordena
+todos los números del arreglo. Por ejemplo, digamos que queremos ordenar el arreglo {8,3,4,7,9,2}
+<br/>
+<br/>
+<table border="">
+  <tr>
+    <td>8</td>
+    <td>3</td>
+    <td>4</td>
+    <td>7</td>
+    <td>9</td>
+    <td>2</td>
+  </tr>
+</table>
+<br/>
+primero buscamos en todo el arreglo el número menor.
+<br/>
+<br/>
+<table border="">
+  <tr>
+    <td>8</td>
+    <td>3</td>
+    <td>4</td>
+    <td>7</td>
+    <td>9</td>
+    <td>
+      <font color="#00cc00">2</font>
+    </td>
+  </tr>
+</table>
+<br/>
+y lo metemos en un arreglo vacío
+<br/>
+<table border="">
+  <tr>
+    <td>
+      <font color="red">2</font>
+    </td>
+    <td>&nbsp;&nbsp;</td>
+    <td>&nbsp;&nbsp;</td>
+    <td>&nbsp;&nbsp;</td>
+    <td>&nbsp;&nbsp;</td>
+    <td>&nbsp;&nbsp;</td>
+  </tr>
+</table>
+después repetimos ignorando el 2 y así hasta ordenar todos los números.
+<br/>
+<table border="">
+  <tr>
+    <td>8</td>
+    <td>
+      <font color="#00cc00">3</font>
+    </td>
+    <td>4</td>
+    <td>7</td>
+    <td>9</td>
+    <td>
+      <font color="red">2</font>
+    </td>
+  </tr>
+</table>
+<br/>
+<table border="">
+  <tr>
+    <td>2</td>
+    <td>
+      <font color="red">3</font>
+    </td>
+    <td>&nbsp;&nbsp;</td>
+    <td>&nbsp;&nbsp;</td>
+    <td>&nbsp;&nbsp;</td>
+    <td>&nbsp;&nbsp;</td>
+  </tr>
+</table>
+<br/>
+<table border="">
+  <tr>
+    <td>8</td>
+    <td>
+      <font color="red">3</font>
+    </td>
+    <td>
+      <font color="#00cc00">4</font>
+    </td>
+    <td>7</td>
+    <td>9</td>
+    <td>
+      <font color="red">2</font>
+    </td>
+  </tr>
+</table>
+<br/>
+<table border="">
+  <tr>
+    <td>2</td>
+    <td>
+      <font color="black">3</font>
+    </td>
+    <td>
+      <font color="red">4</font>
+    </td>
+    <td>&nbsp;&nbsp;</td>
+    <td>&nbsp;&nbsp;</td>
+    <td>&nbsp;&nbsp;</td>
+  </tr>
+</table>
+<br/>
+<table border="">
+  <tr>
+    <td>8</td>
+    <td>
+      <font color="red">3</font>
+    </td>
+    <td>
+      <font color="red">4</font>
+    </td>
+    <td>
+      <font color="#00cc00">7</font>
+    </td>
+    <td>9</td>
+    <td>
+      <font color="red">2</font>
+    </td>
+  </tr>
+</table>
+<br/>
+<table border="">
+  <tr>
+    <td>2</td>
+    <td>
+      <font color="black">3</font>
+    </td>
+    <td>
+      <font color="black">4</font>
+    </td>
+    <td>
+      <font color="red">7</font>
+    </td>
+    <td>&nbsp;&nbsp;</td>
+    <td>&nbsp;&nbsp;</td>
+  </tr>
+</table>
+<br/>
+<table border="">
+  <tr>
+    <td>
+      <font color="#00cc00">8</font>
+    </td>
+    <td>
+      <font color="red">3</font>
+    </td>
+    <td>
+      <font color="red">4</font>
+    </td>
+    <td>
+      <font color="red">7</font>
+    </td>
+    <td>9</td>
+    <td>
+      <font color="red">2</font>
+    </td>
+  </tr>
+</table>
+<br/>
+<table border="">
+  <tr>
+    <td>2</td>
+    <td>
+      <font color="black">3</font>
+    </td>
+    <td>
+      <font color="black">4</font>
+    </td>
+    <td>
+      <font color="black">7</font>
+    </td>
+    <td>
+      <font color="red">8</font>
+    </td>
+    <td>&nbsp;&nbsp;</td>
+  </tr>
+</table>
+<br/>
+<table border="">
+  <tr>
+    <td>
+      <font color="red">8</font>
+    </td>
+    <td>
+      <font color="red">3</font>
+    </td>
+    <td>
+      <font color="red">4</font>
+    </td>
+    <td>
+      <font color="red">7</font>
+    </td>
+    <td>
+      <font color="#00cc00">9</font>
+    </td>
+    <td>
+      <font color="red">2</font>
+    </td>
+  </tr>
+</table>
+<br/>
+<table border="">
+  <tr>
+    <td>2</td>
+    <td>
+      <font color="black">3</font>
+    </td>
+    <td>
+      <font color="black">4</font>
+    </td>
+    <td>
+      <font color="black">7</font>
+    </td>
+    <td>
+      <font color="black">8</font>
+    </td>
+    <td>
+      <font color="red">9</font>
+    </td>
+  </tr>
+</table>
+<h3>Implementación</h3>
+<hr/>
+<pre style='color:#000020;background:#f6f8ff;'><span style='color:#200080; font-weight:bold; '>int</span> n<span style='color:#308080; '>=</span><span style='color:#008c00; '>6</span><span style='color:#406080; '>;</span>
+<span style='color:#200080; font-weight:bold; '>int</span> arr<span style='color:#308080; '>[</span><span style='color:#008c00; '>6</span><span style='color:#308080; '>]</span><span style='color:#308080; '>=</span><span style='color:#406080; '>{</span><span style='color:#008c00; '>8</span><span style='color:#308080; '>,</span><span style='color:#008c00; '>3</span><span style='color:#308080; '>,</span><span style='color:#008c00; '>4</span><span style='color:#308080; '>,</span><span style='color:#008c00; '>7</span><span style='color:#308080; '>,</span><span style='color:#008c00; '>9</span><span style='color:#308080; '>,</span><span style='color:#008c00; '>2</span><span style='color:#406080; '>}</span>
+<span style='color:#200080; font-weight:bold; '>void</span> selectionSort<span style='color:#308080; '>(</span><span style='color:#308080; '>)</span>
+<span style='color:#406080; '>{</span>
+    <span style='color:#200080; font-weight:bold; '>int</span> arr2<span style='color:#308080; '>[</span>n<span style='color:#308080; '>]</span><span style='color:#406080; '>;</span>
+    <span style='color:#200080; font-weight:bold; '>bool</span> marca<span style='color:#308080; '>[</span>n<span style='color:#308080; '>]</span><span style='color:#406080; '>;</span>
+    <span style='color:#200080; font-weight:bold; '>for</span><span style='color:#308080; '>(</span><span style='color:#200080; font-weight:bold; '>int</span> i<span style='color:#308080; '>=</span><span style='color:#008c00; '>0</span><span style='color:#406080; '>;</span>i<span style='color:#308080; '>&lt;</span>n<span style='color:#406080; '>;</span>i<span style='color:#308080; '>+</span><span style='color:#308080; '>+</span><span style='color:#308080; '>)</span>
+         marca<span style='color:#308080; '>[</span>i<span style='color:#308080; '>]</span><span style='color:#308080; '>=</span><span style='color:#008c00; '>0</span>                           <span style='color:#595979; '>//rellenamos nuestra marca con 0s</span>
+    <span style='color:#200080; font-weight:bold; '>for</span><span style='color:#308080; '>(</span><span style='color:#200080; font-weight:bold; '>int</span> i<span style='color:#308080; '>=</span><span style='color:#008c00; '>0</span><span style='color:#406080; '>;</span>i<span style='color:#308080; '>&lt;</span>n<span style='color:#406080; '>;</span>i<span style='color:#308080; '>+</span><span style='color:#308080; '>+</span><span style='color:#308080; '>)</span>
+    <span style='color:#406080; '>{</span>
+         <span style='color:#200080; font-weight:bold; '>int</span> tem1<span style='color:#308080; '>=</span><span style='color:#008c00; '>100000000</span><span style='color:#308080; '>,</span>tem2<span style='color:#406080; '>;</span>
+         <span style='color:#200080; font-weight:bold; '>for</span><span style='color:#308080; '>(</span><span style='color:#200080; font-weight:bold; '>int</span> j<span style='color:#308080; '>=</span><span style='color:#008c00; '>0</span><span style='color:#406080; '>;</span>j<span style='color:#308080; '>&lt;</span>n<span style='color:#406080; '>;</span>j<span style='color:#308080; '>+</span><span style='color:#308080; '>+</span><span style='color:#308080; '>)</span>                 <span style='color:#595979; '>//revisamos todo el arreglo para encontrar el menor
+         <span style='color:#406080; '>{</span>
+             <span style='color:#200080; font-weight:bold; '>if</span><span style='color:#308080; '>(</span>marca<span style='color:#308080; '>[</span>j<span style='color:#308080; '>]</span><span style='color:#308080; '>=</span><span style='color:#308080; '>=</span><span style='color:#008c00; '>0</span> <span style='color:#308080; '>&amp;</span><span style='color:#308080; '>&amp;</span> tem1<span style='color:#308080; '>></span>arr<span style='color:#308080; '>[</span>j<span style='color:#308080; '>]</span><span style='color:#308080; '>)</span>
+             <span style='color:#406080; '>{</span> 
+                  tem1<span style='color:#308080; '>=</span>arr<span style='color:#308080; '>[</span>j<span style='color:#308080; '>]</span><span style='color:#406080; '>;</span>
+                  tem2<span style='color:#308080; '>=</span>j<span style='color:#406080; '>;</span>
+             <span style='color:#406080; '>}</span>
+         <span style='color:#406080; '>}</span>
+         arr2<span style='color:#308080; '>[</span>i<span style='color:#308080; '>]</span><span style='color:#308080; '>=</span>arr<span style='color:#308080; '>[</span>tem2<span style='color:#308080; '>]</span><span style='color:#406080; '>;</span>                   <span style='color:#595979; '>//metemos el numero en nuestro otro arreglo</span>
+         marca<span style='color:#308080; '>[</span>tem2<span style='color:#308080; '>]</span><span style='color:#308080; '>=</span><span style='color:#008c00; '>1</span><span style='color:#406080; '>;</span>                       <span style='color:#595979; '>//marcamos que ya usamos ese numero</span>
+    <span style='color:#406080; '>}</span>
+    <span style='color:#200080; font-weight:bold; '>for</span><span style='color:#308080; '>(</span><span style='color:#200080; font-weight:bold; '>int</span> i<span style='color:#308080; '>=</span><span style='color:#008c00; '>0</span><span style='color:#406080; '>;</span>i<span style='color:#308080; '>&lt;</span>n<span style='color:#406080; '>;</span>i<span style='color:#308080; '>+</span><span style='color:#308080; '>+</span><span style='color:#308080; '>)</span>
+        arr<span style='color:#308080; '>[</span>i<span style='color:#308080; '>]</span><span style='color:#308080; '>=</span>arr<span style='color:#308080; '>[</span><span style='color:#008c00; '>2</span><span style='color:#308080; '>]</span>                         <span style='color:#595979; '>//copiamos el arreglo ordenado al original</span>
+<span style='color:#406080; '>}</span>
+</pre>
+una implementación alternativa para este algoritmo es la siguiente aunque no es tan intuitiva, con la ventaja de que no requiere memoria extra ya que lo ordena en el mismo arreglo en las primeras posiciones de este.
+<br/>
+<pre style='color:#000020;background:#f6f8ff;'><span style='color:#200080; font-weight:bold; '>int</span> n<span style='color:#308080; '>=</span><span style='color:#008c00; '>6</span><span style='color:#406080; '>;</span>
+<span style='color:#200080; font-weight:bold; '>int</span> arr<span style='color:#308080; '>[</span><span style='color:#008c00; '>6</span><span style='color:#308080; '>]</span><span style='color:#308080; '>=</span><span style='color:#406080; '>{</span><span style='color:#008c00; '>8</span><span style='color:#308080; '>,</span><span style='color:#008c00; '>3</span><span style='color:#308080; '>,</span><span style='color:#008c00; '>4</span><span style='color:#308080; '>,</span><span style='color:#008c00; '>7</span><span style='color:#308080; '>,</span><span style='color:#008c00; '>9</span><span style='color:#308080; '>,</span><span style='color:#008c00; '>2</span><span style='color:#406080; '>}</span>
+<span style='color:#200080; font-weight:bold; '>void</span> selectionSort<span style='color:#308080; '>(</span><span style='color:#308080; '>)</span>
+<span style='color:#406080; '>{</span>
+    <span style='color:#200080; font-weight:bold; '>for</span><span style='color:#308080; '>(</span><span style='color:#200080; font-weight:bold; '>int</span> i<span style='color:#308080; '>=</span><span style='color:#008c00; '>0</span><span style='color:#406080; '>;</span>i<span style='color:#308080; '>&lt;</span>n<span style='color:#406080; '>;</span>i<span style='color:#308080; '>+</span><span style='color:#308080; '>+</span><span style='color:#308080; '>)</span>
+    <span style='color:#406080; '>{</span>
+         <span style='color:#200080; font-weight:bold; '>int</span> tem1<span style='color:#308080; '>=</span><span style='color:#008c00; '>0</span><span style='color:#308080; '>,</span>tem2<span style='color:#308080; '>=</span><span style='color:#308080; '>-</span><span style='color:#008c00; '>1</span><span style='color:#406080; '>;</span>
+         <span style='color:#200080; font-weight:bold; '>for</span><span style='color:#308080; '>(</span><span style='color:#200080; font-weight:bold; '>int</span> j<span style='color:#308080; '>=</span>i<span style='color:#406080; '>;</span>j<span style='color:#308080; '>&lt;</span>n<span style='color:#406080; '>;</span>j<span style='color:#308080; '>+</span><span style='color:#308080; '>+</span><span style='color:#308080; '>)</span>                 <span style='color:#595979; '>//revisamos completamente el arreglo para encontrar el menor</span>
+         <span style='color:#406080; '>{</span>
+             <span style='color:#200080; font-weight:bold; '>if</span><span style='color:#308080; '>(</span>tem2 <span style='color:#308080; '>=</span><span style='color:#308080; '>=</span> <span style='color:#308080; '>-</span><span style='color:#008c00; '>1</span> <span style='color:#308080; '>|</span><span style='color:#308080; '>|</span> tem1<span style='color:#308080; '>></span>arr<span style='color:#308080; '>[</span>j<span style='color:#308080; '>]</span><span style='color:#308080; '>)</span>
+             <span style='color:#406080; '>{</span> 
+                  tem1<span style='color:#308080; '>=</span>arr<span style='color:#308080; '>[</span>j<span style='color:#308080; '>]</span><span style='color:#406080; '>;</span>
+                  tem2<span style='color:#308080; '>=</span>j<span style='color:#406080; '>;</span>
+             <span style='color:#406080; '>}</span>
+         <span style='color:#406080; '>}</span>
+         arr<span style='color:#308080; '>[</span>tem2<span style='color:#308080; '>]</span><span style='color:#308080; '>=</span>arr<span style='color:#308080; '>[</span>i<span style='color:#308080; '>]</span><span style='color:#406080; '>;</span>              <span style='color:#595979; '>//mandamos el numero erroneo a la nueva posicion libre.</span>
+         arr<span style='color:#308080; '>[</span>i<span style='color:#308080; '>]</span><span style='color:#308080; '>=</span>tem1<span style='color:#406080; '>;</span>                   <span style='color:#595979; '>//metemos el numero al principio de nuestro arreglo                   </span>
+    <span style='color:#406080; '>}</span>  
+<span style='color:#406080; '>}</span>
+</pre>
+<hr/>
+

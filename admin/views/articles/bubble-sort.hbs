@@ -1,0 +1,455 @@
+
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "TechArticle",
+  "description": "Algoritmo de ordenamiento considerado básico por su fácil implementación, e intuición. Sin embargo es también de los más lentos teniendo complejidad $O(N^{2})$, aunque no usa memoria extra.",
+  "name": "Ordenamiento burbuja",
+  "headline":"Bubble Sort(Ordenamiento Burbuja)",
+  "inLanguage":"es-xl",
+  "sameAs":"https://es.wikipedia.org/wiki/Ordenamiento_de_burbuja",
+  "keywords":"algoritmo,español,ordenamiento,burbuja,sort,bubble,ejemplo,implementación"
+}
+</script>
+El
+<b>bubble sort</b> o
+<b>ordenmiento burbuja</b> Es un algoritmo de ordenamiento considerado básico por su fácil implementación, e intuición. Sin
+embargo es también de los más lentos teniendo complejidad $O(N^{2})$, aunque no usa memoria extra.
+<br/>
+<br/>
+<h3>Explicación</h3>
+<hr/> Digamos que tenemos un arreglo de enteros
+<FONT COLOR="gray">(aunque funciona para cualquier clase de datos)</FONT> \(A\) de tamaño $N$, si queremos ordenarlo de menor a mayor, lo que
+hace el bubble sort es ir "arrastrando" cada número hasta su lugar. Esto se refiere a que mientras recorremos el arreglo,
+llevamos un mayor temporal y lo vamos recorriendo junto con nosotros hasta que llegamos al lugar donde debe estar y repetimos
+el proceso hasta que todo este ordenado.
+<br/> El siguiente ejemplo lo pondrá más claro:
+<br/>
+<br/>
+<div style="font-size:0.95em">
+  Digamos que queremos ordenar el siguiente arreglo:
+  <br/>
+  <br/>
+  <table border>
+    <tr>
+      <td>8</td>
+      <td>3</td>
+      <td>4</td>
+      <td>7</td>
+      <td>9</td>
+      <td>2</td>
+    </tr>
+  </table>
+  <br/> Recorremos nuestro arreglo de izquierda a derecha empezando con el primer número y al movernos a la siguiente posición
+  se compararán los dos números
+  <br/>
+  <br/>
+  <table border="">
+    <tr>
+      <td>
+        <FONT COLOR="red">8</FONT>
+      </td>
+      <td>
+        <FONT COLOR="red">3</FONT>
+      </td>
+      <td>4</td>
+      <td>7</td>
+      <td>9</td>
+      <td>2</td>
+    </tr>
+  </table>
+  <br/> Y como 8 es el mayor de los dos lo intercambiamos con el 3,
+  <br/>
+  <br/>
+  <table border="">
+    <tr>
+      <td>
+        <FONT COLOR="red">3</FONT>
+      </td>
+      <td>
+        <FONT COLOR="red">8</FONT>
+      </td>
+      <td>4</td>
+      <td>7</td>
+      <td>9</td>
+      <td>2</td>
+    </tr>
+  </table>
+  <br/> Y ahora comparamos el 8 con el 4 y así seguimos.
+  <br/>
+  <br/>
+  <table border="">
+    <tr>
+      <td>
+        3
+      </td>
+      <td>
+        <FONT COLOR="red">8</FONT>
+      </td>
+      <td>
+        <FONT COLOR="red">4</FONT>
+      </td>
+      <td>7</td>
+      <td>9</td>
+      <td>2</td>
+    </tr>
+  </table>
+  <br/>
+  <table border="">
+    <tr>
+      <td>
+        3
+      </td>
+      <td>
+        <FONT COLOR="red">4</FONT>
+      </td>
+      <td>
+        <FONT COLOR="red">8</FONT>
+      </td>
+      <td>7</td>
+      <td>9</td>
+      <td>2</td>
+    </tr>
+  </table>
+  <br/>
+  <table border="">
+    <tr>
+      <td>
+        3
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        <FONT COLOR="red">7</FONT>
+      </td>
+      <td>
+        <FONT COLOR="red">8</FONT>
+      </td>
+      <td>9</td>
+      <td>2</td>
+    </tr>
+  </table>
+  <br/>
+  <table border="">
+    <tr>
+      <td>
+        3
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        7
+      </td>
+      <td>
+        <FONT COLOR="red">8</FONT>
+      </td>
+      <td>
+        <FONT COLOR="red">9</FONT>
+      </td>
+      <td>2</td>
+    </tr>
+  </table>
+  <br/>
+  <table border="">
+    <tr>
+      <td>
+        3
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        7
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        <FONT COLOR="red">2</FONT>
+      </td>
+      <td>
+        <FONT COLOR="red">9</FONT>
+      </td>
+    </tr>
+  </table>
+  <br/> Y después volvemos a recorrer el arreglo deteniéndonos en una posición antes del final, ya que el 9 es el mayor de todos
+  y por lo tanto ya no se va a mover.
+  <br/>
+  <br/>
+  <table border="">
+    <tr>
+      <td>
+        <FONT COLOR="red">3</FONT>
+      </td>
+      <td>
+        <FONT COLOR="red">4</FONT>
+      </td>
+      <td>
+        7
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        9
+      </td>
+    </tr>
+  </table>
+  <br/>
+  <table border="">
+    <tr>
+      <td>
+        3
+      </td>
+      <td>
+        <FONT COLOR="red">4</FONT>
+      </td>
+      <td>
+        <FONT COLOR="red">7</FONT>
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        9
+      </td>
+    </tr>
+  </table>
+  <br/>
+  <table border="">
+    <tr>
+      <td>
+        3
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        <FONT COLOR="red">7</FONT>
+      </td>
+      <td>
+        <FONT COLOR="red">8</FONT>
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        9
+      </td>
+    </tr>
+  </table>
+  <br/>
+  <table border="">
+    <tr>
+      <td>
+        3
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        7
+      </td>
+      <td>
+        <FONT COLOR="red">2</FONT>
+      </td>
+      <td>
+        <FONT COLOR="red">8</FONT>
+      </td>
+      <td>
+        9
+      </td>
+    </tr>
+  </table>
+  <br/> Repetimos el proceso otra vez, pero deteniéndonos uno antes porque el 8 al igual que el 9 ya esta en su lugar.
+  <br/>
+  <br/>
+  <table border="">
+    <tr>
+      <td>
+        <FONT COLOR="red">3</FONT>
+      </td>
+      <td>
+        <FONT COLOR="red">4</FONT>
+      </td>
+      <td>
+        7
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        9
+      </td>
+    </tr>
+  </table>
+  <br/>
+  <table border="">
+    <tr>
+      <td>
+        3
+      </td>
+      <td>
+        <FONT COLOR="red">4</FONT>
+      </td>
+      <td>
+        <FONT COLOR="red">7</FONT>
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        9
+      </td>
+    </tr>
+  </table>
+  <br/>
+  <table border="">
+    <tr>
+      <td>
+        3
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        <FONT COLOR="red">2</FONT>
+      </td>
+      <td>
+        <FONT COLOR="red">7</FONT>
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        9
+      </td>
+    </tr>
+  </table>
+  <br/>
+  <table border="">
+    <tr>
+      <td>
+        <FONT COLOR="red">3</FONT>
+      </td>
+      <td>
+        <FONT COLOR="red">4</FONT>
+      </td>
+      <td>
+        2
+      </td>
+      <td>
+        7
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        9
+      </td>
+    </tr>
+  </table>
+  <br/>
+  <table border="">
+    <tr>
+      <td>
+        3
+      </td>
+      <td>
+        <FONT COLOR="red">2</FONT>
+      </td>
+      <td>
+        <FONT COLOR="red">4</FONT>
+      </td>
+      <td>
+        7
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        9
+      </td>
+    </tr>
+  </table>
+  <br/>
+  <table border="">
+    <tr>
+      <td>
+        <FONT COLOR="red">2</FONT>
+      </td>
+      <td>
+        <FONT COLOR="red">3</FONT>
+      </td>
+      <td>
+        4
+      </td>
+      <td>
+        7
+      </td>
+      <td>
+        8
+      </td>
+      <td>
+        9
+      </td>
+    </tr>
+  </table>
+  <br/>
+  <br/> Y así terminamos de ordenar nuestro arreglo
+</div>
+<h3>Implementación</h3>
+<hr/>
+<pre style='color:#000020;background:#f6f8ff;'><span style='color:#200080; font-weight:bold; '>int</span> n<span style='color:#308080; '>=</span><span style='color:#008c00; '>6</span><span style='color:#406080; '>;</span>
+<span style='color:#200080; font-weight:bold; '>int</span> arr<span style='color:#308080; '>[</span><span style='color:#008c00; '>6</span><span style='color:#308080; '>]</span><span style='color:#308080; '>=</span><span style='color:#406080; '>{</span><span style='color:#008c00; '>8</span><span style='color:#308080; '>,</span><span style='color:#008c00; '>3</span><span style='color:#308080; '>,</span><span style='color:#008c00; '>4</span><span style='color:#308080; '>,</span><span style='color:#008c00; '>7</span><span style='color:#308080; '>,</span><span style='color:#008c00; '>9</span><span style='color:#308080; '>,</span><span style='color:#008c00; '>2</span><span style='color:#406080; '>}</span>
+<span style='color:#200080; font-weight:bold; '>void</span> bubbleSort<span style='color:#308080; '>(</span><span style='color:#308080; '>)</span>
+<span style='color:#406080; '>{</span>
+    <span style='color:#200080; font-weight:bold; '>for</span><span style='color:#308080; '>(</span><span style='color:#200080; font-weight:bold; '>int</span> a<span style='color:#308080; '>=</span><span style='color:#008c00; '>0</span><span style='color:#406080; '>;</span>a<span style='color:#308080; '>&lt;</span>n<span style='color:#406080; '>;</span>a<span style='color:#308080; '>+</span><span style='color:#308080; '>+</span><span style='color:#308080; '>)</span>
+    <span style='color:#406080; '>{</span>
+         <span style='color:#595979; '>//vamos a recorrer el arreglo n veces</span>
+         <span style='color:#200080; font-weight:bold; '>for</span><span style='color:#308080; '>(</span><span style='color:#200080; font-weight:bold; '>int</span> b<span style='color:#308080; '>=</span><span style='color:#008c00; '>1</span><span style='color:#406080; '>;</span>b<span style='color:#308080; '>&lt;</span>n<span style='color:#308080; '>-</span>a<span style='color:#406080; '>;</span>b<span style='color:#308080; '>+</span><span style='color:#308080; '>+</span><span style='color:#308080; '>)</span>
+         <span style='color:#406080; '>{</span>
+              <span style='color:#200080; font-weight:bold; '>if</span><span style='color:#308080; '>(</span>arr<span style='color:#308080; '>[</span>b<span style='color:#308080; '>]</span><span style='color:#308080; '>&lt;</span>arr<span style='color:#308080; '>[</span>b<span style='color:#308080; '>-</span><span style='color:#008c00; '>1</span><span style='color:#308080; '>]</span><span style='color:#308080; '>)</span>        <span style='color:#595979; '>//comparamos los dos numeros y si el numero de la</span>
+                 <span style='color:#003060; '>swap</span><span style='color:#308080; '>(</span>arr<span style='color:#308080; '>[</span>b<span style='color:#308080; '>]</span><span style='color:#308080; '>,</span>arr<span style='color:#308080; '>[</span>b<span style='color:#308080; '>-</span><span style='color:#008c00; '>1</span><span style='color:#308080; '>]</span><span style='color:#308080; '>)</span><span style='color:#406080; '>;</span>  <span style='color:#595979; '>//izquierda es mayor al de la derecha lo intercambiamos</span>
+         <span style='color:#406080; '>}</span>
+    <span style='color:#406080; '>}</span>
+<span style='color:#406080; '>}</span>
+</pre> Una opción si queremos hacer el algoritmo más rápido es usando un validador para cuando el arreglo esta ordenado, esto se
+hace fácilmente con una booleana
+<pre style='color:#000020;background:#f6f8ff;'><span style='color:#200080; font-weight:bold; '>int</span> n<span style='color:#308080; '>=</span><span style='color:#008c00; '>6</span><span style='color:#406080; '>;</span>
+<span style='color:#200080; font-weight:bold; '>int</span> arr<span style='color:#308080; '>[</span><span style='color:#008c00; '>6</span><span style='color:#308080; '>]</span><span style='color:#308080; '>=</span><span style='color:#406080; '>{</span><span style='color:#008c00; '>8</span><span style='color:#308080; '>,</span><span style='color:#008c00; '>3</span><span style='color:#308080; '>,</span><span style='color:#008c00; '>4</span><span style='color:#308080; '>,</span><span style='color:#008c00; '>7</span><span style='color:#308080; '>,</span><span style='color:#008c00; '>9</span><span style='color:#308080; '>,</span><span style='color:#008c00; '>2</span><span style='color:#406080; '>}</span>
+<span style='color:#200080; font-weight:bold; '>void</span> bubbleSort<span style='color:#308080; '>(</span><span style='color:#308080; '>)</span>
+<span style='color:#406080; '>{</span>
+    <span style='color:#200080; font-weight:bold; '>for</span><span style='color:#308080; '>(</span><span style='color:#200080; font-weight:bold; '>int</span> a<span style='color:#308080; '>=</span><span style='color:#008c00; '>0</span><span style='color:#406080; '>;</span>a<span style='color:#308080; '>&lt;</span>n<span style='color:#406080; '>;</span>a<span style='color:#308080; '>+</span><span style='color:#308080; '>+</span><span style='color:#308080; '>)</span>
+    <span style='color:#406080; '>{</span>
+         <span style='color:#595979; '>//vamos a recorrer el arreglo n veces</span>
+         <span style='color:#200080; font-weight:bold; '>bool</span> ordenado<span style='color:#308080; '>=</span><span style='color:#200080; font-weight:bold; '>true</span><span style='color:#406080; '>;</span>
+         <span style='color:#200080; font-weight:bold; '>for</span><span style='color:#308080; '>(</span><span style='color:#200080; font-weight:bold; '>int</span> b<span style='color:#308080; '>=</span><span style='color:#008c00; '>1</span><span style='color:#406080; '>;</span>b<span style='color:#308080; '>&lt;</span>n<span style='color:#308080; '>-</span>a<span style='color:#406080; '>;</span>b<span style='color:#308080; '>+</span><span style='color:#308080; '>+</span><span style='color:#308080; '>)</span>
+         <span style='color:#406080; '>{</span>
+              <span style='color:#200080; font-weight:bold; '>if</span><span style='color:#308080; '>(</span>arr<span style='color:#308080; '>[</span>b<span style='color:#308080; '>]</span><span style='color:#308080; '>&lt;</span>arr<span style='color:#308080; '>[</span>b<span style='color:#308080; '>-</span><span style='color:#008c00; '>1</span><span style='color:#308080; '>]</span><span style='color:#308080; '>)</span>         <span style='color:#595979; '>//comparamos los dos numeros y si el numero de la</span>
+              <span style='color:#406080; '>{</span>
+                 <span style='color:#003060; '>swap</span><span style='color:#308080; '>(</span>arr<span style='color:#308080; '>[</span>b<span style='color:#308080; '>]</span><span style='color:#308080; '>,</span>arr<span style='color:#308080; '>[</span>b<span style='color:#308080; '>-</span><span style='color:#008c00; '>1</span><span style='color:#308080; '>]</span><span style='color:#308080; '>)</span><span style='color:#406080; '>;</span>   <span style='color:#595979; '>//izquierda es mayor al de la derecha lo intercambiamos</span>
+                 ordenado<span style='color:#308080; '>=</span><span style='color:#200080; font-weight:bold; '>false</span><span style='color:#406080; '>;</span>          <span style='color:#595979; '>//avisamos que el arreglo no esta ordenado</span>
+              <span style='color:#406080; '>}</span>                           
+         <span style='color:#406080; '>}</span>
+         <span style='color:#200080; font-weight:bold; '>if</span><span style='color:#308080; '>(</span>ordenado<span style='color:#308080; '>)</span>
+              <span style='color:#200080; font-weight:bold; '>break</span><span style='color:#406080; '>;</span>                     <span style='color:#595979; '>//break es una funcion de c++ que te saca del ciclo</span>
+    <span style='color:#406080; '>}</span>
+<span style='color:#406080; '>}</span>
+</pre>
+
+<hr/>
