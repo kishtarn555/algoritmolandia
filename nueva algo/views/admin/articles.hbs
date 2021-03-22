@@ -1,0 +1,188 @@
+<style>
+    .add-button {
+        color:black;
+        text-decoration:none;       
+        background-color: rgb(155, 219, 143);
+        border: solid white 2px;
+        border-bottom: solid darkgray 3px;
+        border-right: solid darkgray 3px;
+        padding: 5px;
+        padding-left: 7px;
+        padding-right: 7px;
+        display: inline-block; 
+    }
+    .table-btn {
+        color:#505050;
+        display: inline-block;
+        text-decoration: none;
+    }
+    .table-btn :hover  {
+        color:#5050F0;
+        display: inline-block;
+        text-decoration: none;
+    }
+    .pop-out {
+        position: fixed;
+        top: 0;
+        left:0;
+        right: 0;
+        bottom: 0;
+        background-color: #000000A0;
+        z-index: 2;
+
+    }
+    #eliminationData  {
+        min-width: 50%;
+    }
+    #eliminationData  input{
+        min-width: 100%;
+    }
+</style>
+<div class="Container">
+    <h1>Articulos</h1>
+        <div class="add-button" ><a href="newArticle" style="color:inherit"><b>Crear articulo</b></a></div>
+        <br/>
+        <br/>
+      
+<table id="example" class="table table-striped table-bordered" style="width:100%">
+        <thead>
+            <tr>
+                <th>Titulo</th>
+                <th>Descripcion corta</th>
+                <th>Url </th>
+                <th>Fecha de creacion</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each articles}}
+                <tr>
+                    <td>{{this.title}}</td>
+                    <td>{{clampstring 25 this.shortDescription}}</td>
+                    <td>{{this.url}}  
+                        <a onclick="editArticeUrl({{JSONstringify this}})"  class="table-btn"><i class="fas fa-edit"></i></a> 
+                    </td>
+                    <td>{{this.date}}</td>
+                    <td>
+                        <a href="editArtice/{{this.url}}"    class="table-btn"><i class="fas fa-edit"></i></a> 
+                        <a onclick="deleteArticlePopOut({{JSONstringify this}})" class="table-btn"><i class="fas fa-trash"></i></a>
+                    </td>
+                </tr>
+            {{/each}}
+
+        </tbody>    
+    </table>  
+</div>
+
+
+<div class="pop-out" id="eliminationMessage" hidden>
+    
+        <div class="Container">
+            <center>
+                <h2>Eliminar articulo</h2>
+                Ey! Parece que quieres elimnar el articulo <b id="eliminationTargetTitle"></b> con url <b id="eliminationTargetUrl"></b>.
+                <br/>
+                Para estar seguro de que realmente lo quieres por favor completa la siguiente información.
+                <br/><br/>
+            </center>
+            <div style="text-align:center">
+                <diV></diV>
+                <form id="eliminationData" style="text-align:left; display:inline-block" action="deleteArticle" method="POST" target="deletionIFR">
+                    Titulo del articulo<i style="color:red">*</i>
+                    <br/>
+                    <input type="text" name="articuloTitle" placeholder="Titulo del articulo a borrar, debe coincidir" required>
+                    <br/>
+                    Contraseña<i style="color:red">*</i>
+                    <br/>
+                    {{!-- <input type="password" name="password" placeholder="Titulo del articulo a borrar, debe coincidir" required> --}}
+                    <br/><br/>
+                    <button>Eliminar</button>
+                    <button type="button" onclick="cancelDeleteArticle()"> Cancelar</button>
+                    
+                    <input type="text" name="tokenInfo" id="tokenInfo" hidden>
+                    <input type="text" name="hiddenArticleUrl" id="hiddenArticleUrl" hidden>
+                    
+                </form>
+                <br/>
+                <iframe name='deletionIFR'></iframe>
+                
+            </div>
+
+        </div>
+        
+</div>
+
+
+<div class="pop-out" id="urlMessage" hidden>
+    
+        <div class="Container">
+            <center>
+                <h2>Cambiar url</h2>
+                Ey! Parece que quieres cambiar la url del articulo <b id="urlTargetTitle"></b> con url <b id="urlTargetUrl"></b>.
+                <br/>
+                Para estar seguro de que realmente lo quieres por favor completa la siguiente información.
+            <br/><br/>
+                        </center>
+            <div style="text-align:center">
+                <diV></diV>
+                <form id="eliminationData" style="text-align:left; display:inline-block" action="changeUrlArticle" method="POST" target="deletionIFR">
+                    Titulo del articulo<i style="color:red">*</i>
+                    <br/>
+                    <input type="text" name="articuloTitle" placeholder="Titulo del articulo a borrar, debe coincidir" required>
+                    <br/>
+                    Nueva Url del articulo<i style="color:red">*</i>
+                    <br/>
+                    <input type="text" name="newUrl" placeholder="Nueva url" required>
+                    <br/>
+                    <br/>
+                    {{!-- <input type="password" name="password" placeholder="Titulo del articulo a borrar, debe coincidir" required> --}}
+                    <br/><br/>
+                    <button>Cambiar</button>
+                    <button type="button" onclick="cancelUrlArticle()"> Cancelar</button>
+                    
+                    <input type="text" name="tokenInfo" id="tokenInfo" hidden>
+                    <input type="text" name="hiddenArticleUrl" id="hiddenArticleUrl" hidden>
+                    
+                </form>
+                <br/>
+                <iframe name='deletionIFR'></iframe>
+                
+            </div>
+
+        </div>
+        
+</div>
+
+
+<script>
+    $(document).ready(function() {
+        $('#example').DataTable();
+    } );
+    firebase.auth().currentUser.getIdToken(true).then(
+          function(ID) {
+            document.getElementById('tokenInfo').value=ID;
+          });
+    function deleteArticlePopOut(data) {
+        document.getElementById('eliminationTargetTitle').innerText=data.title;
+        document.getElementById('eliminationTargetUrl').innerText=data.url;
+        document.getElementById('hiddenArticleUrl').value=data.url;
+        document.getElementById('eliminationMessage').removeAttribute('hidden');
+        
+
+        
+    }
+    function cancelDeleteArticle(data) {
+        document.getElementById('eliminationTargetTitle').innerText="";
+        document.getElementById('eliminationTargetUrl').innerText="";
+        document.getElementById('eliminationMessage').setAttribute('hidden','');
+        
+    }
+    function editArticeUrl(data) {
+        document.getElementById('urlMessage').removeAttribute('hidden');
+    }
+    function cancelUrlArticle() {
+        document.getElementById('urlMessage').setAttribute('hidden','');
+        
+    }
+</script>
+

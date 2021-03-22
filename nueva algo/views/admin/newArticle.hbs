@@ -1,0 +1,92 @@
+<style>
+  .Content {
+    width:100%;
+    
+    height: 510px;
+    white-space: nowrap;
+
+    background-color:white;
+    border:1px solid grey;
+    padding: 5px;
+  }
+  .preview {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+  }
+</style>
+    <div class="Container" style="padding:10px">
+
+<h1>Redacción de nuevo artículo</h1>
+
+<form  id="Content_editor" onsubmit="return false;">
+  <button onclick="ShowEditor();" type="button">Editar</button> 
+  <button onclick="ShowPreview()" type="button">Vista previa</button>
+  <br/>
+  <div id="Content_area">
+    
+<br/>
+<h3>Titulo</h3>
+<input type="text" name="title" id="article_title" style="width:100%">
+<h3>Url</h3>
+<input type="text" name="url" id="article_url" style="width:100%">
+<h3>Descripción corta</h3>
+<textarea name="shortDescription" maxlength="150" style="width:100%"></textarea>
+<h3>Contenido</h3>
+  <textarea class="Content" name="content" onkeyup="save_work()" id="article_content" on="alert('qw')"></textarea>
+  
+<h3>Categorías</h3>
+<input type="text" name="categories" id="cat_art"  style="width:100%">
+<br/>
+Cata categoría debe de ir separada por comas, los espacios representados con guiones '-' (Ej "grafo-bipartito,maximo-emparejamiento").  
+
+
+
+  </div>
+  <input name="tokenInfo" id="tokenInfoForm" hidden>
+  <button onclick="UploadArticle()" type="button">Publicar</button>
+
+</form>
+</div>
+
+<iframe name="ifra" class="preview" id="preview_ifr" hidden="l"></iframe>
+
+
+<script name="CustomScript">
+  firebase.auth().currentUser.getIdToken(true).then(
+          function(ID) {
+            document.getElementById('tokenInfoForm').value=ID;
+          });
+  function ShowPreview() {
+    document.getElementById('preview_ifr').removeAttribute('hidden');
+    var preview;
+    $.post('/preview', $('#Content_editor').serialize() ).done (
+      function(data){
+        preview=data;
+        document.getElementById('preview_ifr').setAttribute('srcdoc',preview);}
+    );
+    document.getElementById('Content_area').setAttribute('hidden','');
+  }
+  function ShowEditor() {
+    document.getElementById('Content_area').removeAttribute('hidden');
+    document.getElementById('preview_ifr').setAttribute('hidden','');
+  }
+
+
+  function UploadArticle () {
+    $.post('upload_article',$('#Content_editor').serialize()).done((data)=>alert(data)).catch((data)=>alert(data.status+"\n"+data.responseText));
+   
+  }
+
+  function load_work() {
+     document.getElementById('article_content').value=window.localStorage.getItem('articletmp');
+  };
+  load_work();
+  function save_work() {
+      window.localStorage.setItem('articletmp',document.getElementById('article_content').value);
+
+  }
+</script>
+
+
+

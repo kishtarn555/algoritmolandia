@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: csadmin.algoritmolandia.com/
+Sitemap: http://algoritmolandia.com/sitemap.xml

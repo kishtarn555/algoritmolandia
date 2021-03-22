@@ -1,0 +1,233 @@
+El <b>Segment tree</b> o <b>Árbol de segmentos</b> es una estructura de datos que permite realizar actualizaciones y consultas de rangos de forma rápida.
+Esto lo logra mediante el uso de un árbol binario donde cada nodo representa un subrango.
+<br/>
+<br/>Funciona de forma de la raiz represente al rango completo, su hijo izquierdo a la mitad izquierda del rango, mientras que el derecho a la mitad derecha. En general, cada nodo representa la respuesta de un subrango y cada uno de sus dos hijos representan la mitad izquierda y derecha de dicho subrango.<br/>
+Lo anterior permite que el valor de los dos hijos de un nodo sean combinados para obtener el valor de ese nodo.  
+<br/>
+<br/>
+Para entenderlo mejor, podemos ver el siguiente problema.
+
+<h3>Problema</h3>
+<hr/>
+Dado un arreglo de enteros \(A\), podemos realizarle la siguente serie de operaciones:  
+<br/>
+<br/>
+<div class="tabuled-area">
+    <b>actualizar(i,x)</b>, esta operacion cambia el valor de $A_i$ por $x$.
+    <br/>
+    <b>calculaSuma(i,j)</b>, esta operacion devuelve el valor de $\sum_{k=i}^j A_k$, es decir el valor de $A_i+A_{i+1}+A_{i+2}+...+A_j$.
+<br/>
+    <i>Nota: Los indices comienzan en 0.</i>    
+</div>
+<br/>
+Este problema puede ser resuelto de diferentes formas, una solucion sencilla es guardar $A$ en un arreglo, realizar actualizar(i,x) cambiando el valor de A[i], mientras que calculaSuma(i,j) sumar todos los valores con un ciclo:
+<br/>
+A continuación se muestra dicho código.
+<br/>
+
+    <pre><code class="c++">
+    int A[10000];
+
+    void actualizar(int i, int x) {
+        A[i]=x;
+    }
+
+    int calculaSuma(int i, int j) {
+        int res=0;
+        for (int k =i; k &lt;= j; k++)
+        res+=A[k];
+        return res;
+    }
+    </code> </pre>
+Sin embargo la complejidad de esto es:<br/>
+ $O(1)$ para actualizar.<br/>
+ $O(N)$ para calculaSuma, siendo $N$ el tamaño de $A$.<br/>
+
+ Sin embargo si realizamos una gran cantidad de operaciones calculaSuma en un arreglo, la solución deja de ser lo suficientemente rápida para ser viable.
+ <h3>Uso de Segment tree</h3>
+ <hr>  
+ Este problema puede ser agilizado mediante la implementación de un segment tree, para ello veremos el siguiente ejemplo.
+ <br/>
+ <br/>
+ Supongamos que nuestro arreglo $A$ es $\{1,2,3,4,5,6,7,8\}$.
+<br/>
+
+
+Entonces podemos ver nuestro arreglo como lo siguiente:
+<br/>
+<img style="max-width: 100%;" src="/images/articles/segmenttree/line.PNG" 
+alt="image" />
+<br/>
+Podemos calcular la suma de dos nodos consecutivos en un nivel superior.
+<br/>
+<img style="max-width: 100%;" src="/images/articles/segmenttree/line2.PNG" 
+alt="image" />
+<br/>
+Y repetir lo mismo hasta terminar con el siguiente árbol.
+<br/>
+<img style="max-width: 100%;" src="/images/articles/segmenttree/fullst.PNG" 
+alt="image" />
+<br/>
+Una ves tenemos el árbol anterior, podemos ver que cada nodo representa la suma de un subrango.<br/>
+Y que ademas, con excepcion de las hojas, todos los nodos tienen dos hijos que representan la suma de la mitad izquierda y la mitad derecha del subrango, por lo tanto al juntarlos se obtiene al padre.
+<b>Este árbol representa el segment tree</b> del arreglo de $A$
+<br/>
+<br/>
+
+
+<h3>Construcción del Segment Tree</h3>
+<hr>
+Para construir el árbol o segment tree, debemos observar que cada nodo tiene la suma del rango $[l,r]$ y su hijo izquierdo representara al rango $[l,\lfloor\frac{l+r}{2}\rfloor]$ y el derecho tendrá el rango $[\lfloor\frac{l+r}{2}\rfloor+1,r]$.
+<br/>
+Entonces podemos usar la recursión para generar el arbol, pero primero hay que observar que podemos guardar el segment tree en un arreglo enumerando los nodos de la siguiente forma.
+<br/>
+<img style="max-width: 100%;" src="/images/articles/segmenttree/fullst-indexed.PNG"
+alt="image" />
+<br/>
+De forma de que para generar el indice del hijo izquierdo y derecho del nodo $n$ usemos la formula $2n+1$ y $2n+2$ respectivamente (imagen inferior). 
+<br/>
+<img style="max-width: 100%;" src="/images/articles/segmenttree/index-child.png">
+<br/>
+Entonces el código para construir el segment tree queda de la siguiente forma.
+<pre><code class="c++">
+int A[10000];
+int ST[20000];
+
+//Genera el segment tree del arreglo A del rango [ini,fin]y lo guarda en ST [ind]
+void generarSegmentTree(int ini, int fin, int ind) {
+    if (ini == fin) {
+        //Nos encontramos en una hoja, su valor es del arreglo A
+        ST[ind]=A[ini];
+        return;
+    }
+    //Generar el hijo izquierdo
+    generarSegmentTree(ini, (ini+fin)/2, 2*ind+1);
+    //Generar el hijo derecho
+    generarSegmentTree((ini+fin)/2+1,fin, 2*ind+2);
+    //Combinar los dos hijos en nosotros, su padre
+    ST[ind]=ST[2*ind+1]+ST[2*ind+2];
+}
+
+</code></pre>
+Todo lo anterior se realiza con una complejidad de $O(N)$.
+<br/>
+<br/> Una vez construido nuestro Segment tree realizar la operacion calculaSuma(i,j) es sencillo.
+
+<h3>Consulta al Segment Tree</h3>
+<hr>
+
+En el segment tree podemos obtener calculaSuma de forma rápida. Ya que podemos observar que el árbol tiene una altura de $O(log\ N)$, entonces podemos elegir con recursión los nodos que representan el rango.
+Por ejemplo para el rango $(2,7)$ necesitamos los nodos que están en rojo:
+<br/>
+<img style="max-width: 100%;" src="/images/articles/segmenttree/fullst-range.PNG" 
+alt="image" />
+<br/>
+Es decir que calculaSuma(2,7) equivale a la suma de los nodos rojos, $7+26=33$, lo cual podemos observar que es cierto.
+<br/>
+<br/>
+Entonces por cada calculaSuma(i, j) que queramos calcular debemos buscar los nodos rojos y sumarlos. Pero primero hay que entender lo siguiente de ellos:
+<div class="tabuled-area">
+    <li>Ningun nodo rojo tendrá un nodo rojo en su camino a raiz (arriba).</li>
+    <li>Todas las hojas que tengan a un nodo rojo deben formar parte del rango que queremos calcular.</li>
+    <li>Si algunas (pero no todas) hojas que están debajo de un nodo pertenecen al rango que queremos calcular, entonces habrá un nodo rojo abajo de este.</li>
+    <li>Si ninguna hoja que está debajo de un nodo pertenecen al rango que queremos calcular, entonces este nodo, ni ninguno abajo es rojo.</li>
+</div>
+<br/>
+En base a los anterirores puntos podemos comenzar a buscar los puntos rojos con una sencilla recursión.
+<br/>
+<div class="tabuled-area">Iniciaremos en la raiz del segment tree.
+<br/>1) Veremos si el subrango que representa ese nodo esta TOTALMENTE incluido en el rango que queremos calcular, si así es, entonces identificaremos este nodo como rojo y regresaremos su valor.
+<br/>2) Si el subrango de un nodo esta parcialmente contenido (tercer punto), entonces buscamos nodos rojos en sus hijos.
+<br/>3) Si ninguna de las anteriores condiciones se cumple, entonces ni nosotros ni un hijo es un nodo rojo, por lo que ignoramos todo este sub-árbol.
+</div>
+<br/>
+El codigo de lo anterior queda de la siguiente forma:
+<pre><code class="cpp">
+//Tamano de A
+int N;
+int A[10000];
+//El segment tree
+int ST[20000];
+
+//Calcula la suma del rango [i,j]
+int calculaSuma(int i, int j) {
+  return buscaRojos(i, j, 0, N-1,0);
+}
+
+//busca nodos rojos del rango [i,j] a partir del nodo ind que abarca el subrango [l,r]
+int buscaRojos(int i, int j, int l, int r, int ind) {
+   //El rango del nodo ind [l,r] esta perfectamente contenido en [i,j]
+   if (i <=l && r <=r) {
+      //Este nodo es rojo
+      return ST[ind];
+   }
+
+   if (l > j || r < i) {
+      //El rango de este nodo esta completamente fuera de [i,j] nada de este subarbol es rojo;
+      return 0;//Usamos 0 porque es el neutro de la suma.
+   }
+   //Existe al menos un nodo rojo debajo, buscalos.
+   int izq = buscaRojos(i,j,l,(l+r)/2,2*ind+1);
+   int der = buscaRojos(i,j,(l+r)/2+1,r,2*ind+2);
+   return izq+der;
+}
+    </code></pre>
+Si analizamos este algoritmo, se puede observar que por nivel, a lo más probaremos cuatro nodos, ya que de lo contrario romperiamos la regla de los nodos rojos. <br/>
+Por esto, y por que solo hay $O(log\ N)$ niveles, decimos que este algoritmo tiene complejidad $O(log\ N)$.
+<br/>
+
+
+<h3>Actualizaciones al arreglo</h3>
+<hr>
+Cuando aplicamos la operación Actualizar(i,x), podemos observar como cambia el valor del nodo [i,i], y los que pertenecen al camino entre él y la raiz, se muestra en la imagen un ejempo donde se resaltan los nodos afectados en amarillo.<br/> 
+
+<img style="max-width: 100%;" src="/images/articles/segmenttree/fullst-update.png" 
+alt="image" />
+
+<br/>
+Entonces cada ves que actualizemos una posición en el arreglo, podemos buscar con recursión el nodo [i,i], modificar su valor y de abaho hacia arriba ir recalculando los nodos amarillos.
+<br/>
+El codigo de esta idea queda:
+<pre><code class="cpp">
+//Tamano del arreglo A
+int N;
+int A[10000];
+//Segment tree
+int ST[20000];
+
+void actualizar(int i, int x) {
+    caminoAmarillo(i,x,0,N-1,0);
+}
+
+//Recorre el camino amarillo para cambiar el nodo [i,i] al valor x, desde el nodo [l,r] con indice ind en ST
+void caminoAmarillo(int i, int x, int l, int r, int ind) {
+   //Estamos en una hoja, y por lo tanto en [i,i] 
+   if (l==r) {
+      ST[ind]=x;
+      return;
+   }
+   //calculamos la mitad del rango
+   int mid =(l+r)/2;
+    
+   if (i %lq;= mid) {
+       //El nodo[i,i] pertenece al hijo izquierdo
+       caminoAmarillo(i,x,l,mid,2*ind+1);
+   } else {
+       //El nodo[i,i] pertenece al hijo derecho
+       caminoAmarillo(i,x,mid+1,r,2*ind+2);
+   }
+   //Recalcular ST[ind]
+   ST[ind]=ST[2*ind+1]+ST[2*ind+2];
+}
+</code></pre>
+
+Podemos ver que la complejidad de esto es $O(log\ N)$, ya que tenemos aproximadamente $log\ N$ niveles, y en cada llamda recursiva bajamos un nivel.
+<h3>Otros usos del Segment Tree</h3>
+<hr>
+En general, el Segment Tree puede ser usado para agilizar el calculo de operaciones de rangos.<br>
+Puede ser usado con otras operaciones además de la suma, por ejemplo minimo-maximo, minimo comun multiplo(mcm) y Máximo Comun Divisor(MCD), entre muchas otras.
+<br/>
+Lo que debe cumplir una operación para que se pueda usar en un segment tree es que sea asociativa, es decir que $A  \oplus B  \oplus C = ((A  \oplus B)  \oplus C)$   
+<br/>
+Una optimizacion para el segment tree es <a href="/lazy-propagation">Lazy Propagation</a>
+  <hr>
