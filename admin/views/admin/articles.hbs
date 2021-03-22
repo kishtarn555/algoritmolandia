@@ -56,15 +56,16 @@
         </thead>
         <tbody>
             {{#each articles}}
+            
                 <tr>
                     <td>{{this.title}}</td>
-                    <td>{{clampstring 25 this.shortDescription}}</td>
+                    <td>{{clampstring 25 this.content}}</td>
                     <td>{{this.url}}  
                         <a onclick="editArticeUrl({{JSONstringify this}})"  class="table-btn"><i class="fas fa-edit"></i></a> 
                     </td>
-                    <td>{{this.date}}</td>
+                    <td>DEBERIA TENER FECHA</td>
                     <td>
-                        <a href="editArtice/{{this.url}}"    class="table-btn"><i class="fas fa-edit"></i></a> 
+                        <a href="admin/editArtice/{{this.url}}"    class="table-btn"><i class="fas fa-edit"></i></a> 
                         <a onclick="deleteArticlePopOut({{JSONstringify this}})" class="table-btn"><i class="fas fa-trash"></i></a>
                     </td>
                 </tr>

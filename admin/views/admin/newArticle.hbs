@@ -60,7 +60,7 @@ Cata categoría debe de ir separada por comas, los espacios representados con gu
   function ShowPreview() {
     document.getElementById('preview_ifr').removeAttribute('hidden');
     var preview;
-    $.post('/preview', $('#Content_editor').serialize() ).done (
+    $.post('/admin/preview', $('#Content_editor').serialize() ).done (
       function(data){
         preview=data;
         document.getElementById('preview_ifr').setAttribute('srcdoc',preview);}

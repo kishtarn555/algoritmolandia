@@ -42,6 +42,7 @@
 </head>
 <body>
 
+      <script  src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <center>
  <div class="Container">
      <h1>Iniciar sesion</h1>
@@ -69,30 +70,47 @@
     messagingSenderId: "952044042126"
   };
   firebase.initializeApp(config);
+
+  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
  
  const btnLogin = document.getElementById('loginBTN');
  const userInp = document.getElementById('user');
  const passInp = document.getElementById('password');
 
+function parseJwt (token) {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace('-', '+').replace('_', '/');
+    return JSON.parse(window.atob(base64));
+};
+
  btnLogin.addEventListener('click',e=>{
     var Email = userInp.value;
-    var Password = passInp.value;
-    firebase.auth().signInWithEmailAndPassword(Email, Password).catch(e=>console.log("Error log in"));
-    
- });
+    var Password = passInp.value;    
+    // When the user signs in with email and password.
+    firebase.auth().signInWithEmailAndPassword(Email, Password).then(user => {
+    // Get the user's ID token as it is needed to exchange for a session cookie.
+    return user.user.getIdToken().then(idToken => {
+        // Session login endpoint is queried and the session cookie is set.
+        // CSRF protection should be taken into account.
+        // ...
+        const csrfToken = 'pueblo_paleta'
+        return $.post('/admin/sessionLogin', new URLSearchParams( {'idToken':idToken, 'csrfToken':csrfToken}).toString());
+    });
+    }).then(() => {
+    // A page redirect would suffice as the persistence is set to NONE.
+    return firebase.auth().signOut();
+    }).then(() => {
+    window.location.assign('/admin/dashboard');
+    }).catch(e=>console.log("Error log in"+e));
+        
+});
 
-firebase.auth().onAuthStateChanged(firebaseUser=> {
-    if (firebaseUser) {
-        console.log(firebaseUser);
-        window.location.replace("/dashboard");
-    } else {
-    }
-})
 
   
 </script>
 
 
+    <script  src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
 
    </body>
    </html>

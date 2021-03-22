@@ -27,6 +27,27 @@
                 )
                 .catch(()=>reject({status:500, message:"Error al conectarse a mongo"}));
             });
+    },
+    /**
+             * Summary. Regresa un arreglo con los documentos de todos los short articles.
+             */
+     getAllShortArticles:function() {
+        return new Promise(function(resolve, reject){
+            MongoClient.connect(MongoUri).
+            then((database)=>{
+                database.db('websiteInfo').collection('articles').find({}).toArray()
+                .then((res)=>{resolve(res); })
+                .catch(()=> reject("Error al obtener articulos"));
+                
+
+                database.close();
+            })
+            .catch(
+              ()=>  reject({message:"Error al conectarse con mongo",status:500})
+
+            );
+        });
+
     }
 
  }
