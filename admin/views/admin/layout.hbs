@@ -65,7 +65,12 @@
           <a href="http://www.algoritmolandia.com">Pagina principal</a>
         </div>
         <div class="col">
-          <button onclick="firebase.auth().signOut()">Cerrar sesion</button>
+            <div style='display: inline;' id="user_name_header_nav">
+            User_name
+          </div>
+          <button onclick="log_out()">Cerrar sesion</button>
+          
+        
         </div>
       </div>
       
@@ -80,9 +85,22 @@
       
     <script  src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
     <script  src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
-   
+   <script >
+     const event = new Event('onUserInfo');
+   </script>
 {{{body}}}
-
+<script name="getUserInfo">
+  $.getJSON('/admin/inner/getUserInfo').then(data=> {
+    document.getElementById('user_name_header_nav').innerText=data.name;
+  })
+</script>
+<script name="utility">
+  function log_out() {
+    $.post('sessionLogout').then(data=> {
+      window.location.replace('/admin/login');
+    })
+  }
+</script>
  
     <script  src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
 <script  src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"></script>

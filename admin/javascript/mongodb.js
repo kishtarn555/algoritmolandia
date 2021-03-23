@@ -48,6 +48,34 @@
             );
         });
 
+    },
+    getUserData:function(user_ID) {
+        return new Promise(
+            function (resolve, reject) {
+                if (typeof user_ID !== "string") {
+                    reject({status:400,message:'User_ID is not string'});
+                    return;
+                }
+                var database;
+                MongoClient.connect(MongoUri)
+                .then (
+                    function(dtb) {
+                        database=dtb;
+                        database.db('websiteInfo').collection('users').findOne({FB_id:user_ID})
+                        .then((data)=>{
+                            database.close();
+                            if (!data) {
+                                reject({status:404,message:"No existe el articulo por esa url"});
+                                return;
+                            }
+                            resolve(data);
+                     
+                        })
+                        .catch((err)=>{database.close(); reject({status:500, message:"Error buscando un usuario"})});
+                    }
+                )
+                .catch(()=>reject({status:500, message:"Error al conectarse a mongo"}));
+            });
     }
 
  }

@@ -67,6 +67,8 @@ let indexRouter = require('./routes/indexRoute');
 let adminRouter = require('./routes/adminRouter');
 
 app.use(express.urlencoded({extended:true}));
+app.use(require('cookie-parser')());
+
 app.use('/admin/', adminRouter);
 app.use('/', indexRouter);
 

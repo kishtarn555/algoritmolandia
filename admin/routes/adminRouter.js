@@ -1,5 +1,4 @@
 let utilMongo = require('../javascript/mongodb.js');
-let utilFireBase = require('../javascript/firebase.js');
 
 const express = require('express');
 let handlebars = require('express-handlebars');
@@ -9,14 +8,44 @@ let bodyparser=require('body-parser');
 
 var router = express.Router();
 
+router.get('/inner/getUserInfo',  function(req, res, next) {
+    const sessionCookie = req.cookies.session || '';
+    FireBase
+    .auth()
+    .verifySessionCookie(sessionCookie,true).then((decodedClaims)=>{
+        let ans ={
+            email:'',
+            name:'',
+            public_name:''
+        }
+        utilMongo.getUserData(decodedClaims.uid.toString()).then(data=>{
+            ans.email=data.email;
+            ans.name=data.name;
+            ans.public_name=data.public_name;
+            res.send(JSON.stringify(ans));
+        }).catch(err=> {
+            res.status(err.status).send(err);
+        });
+    }).catch(error => {
+        res.status(401).send(JSON.stringify( {'status':'error'} ));
+    });
+});
 
 router.get('/login', function(req, res, next) {
     res.render('admin/login',{layout:false});
   });
 
 router.get('/*', function(req, res, next) {
-    console.log(req.cookies);
-    res.send("NEED AUTH");
+    let succ = false;
+    const sessionCookie = req.cookies.session || '';
+    FireBase
+    .auth()
+    .verifySessionCookie(sessionCookie,true).then((decodedClaims)=>{
+        next();
+    }).catch(error => {
+        res.redirect('login');
+    });
+
 });
 
 router.get('/articles', function(req, res, next) {
@@ -47,11 +76,16 @@ router.get('/newArticle', function(req, res, next) {
     res.render("admin/newArticle", {layout:"admin/layout"})
 });
 
+
 router.post('/preview',function(req, res, next) {
     console.log(req.body);
     res.render('',{layout:'content-layout.hbs',title:req.body.title, content:req.body.content});
     
   }); 
+  router.post('/sessionLogout', (req, res) => {
+    res.clearCookie('session');
+    res.redirect('/admin/login');
+  });
   router.post('/sessionLogin',function(req, res, next) {
     
     const idToken = req.body.idToken.toString();
@@ -87,4 +121,8 @@ router.post('/preview',function(req, res, next) {
         }
     )
   }); 
+  router.get('/*', function(req, res, next) {
+    res.send("ERROR 404");
+
+});
 module.exports = router;
